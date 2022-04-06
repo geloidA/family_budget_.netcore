@@ -9,7 +9,7 @@ namespace family_budget.Models
     class FamilyMember
     {
         public int Id { get; set; }
-        public int FullName { get; set; }
-        public FamilyRole Role { get; set; }
+        public string FullName { get; set; }
+        public string FamilyRole { get; set; }
     }
 }

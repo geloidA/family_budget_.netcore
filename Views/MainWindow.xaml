@@ -11,6 +11,6 @@
         <vm:NewViewModel/>
     </Window.DataContext>
     <Grid>
-        
+        <DataGrid ItemsSource="{Binding FamilyMembers}"/>
     </Grid>
 </Window>
