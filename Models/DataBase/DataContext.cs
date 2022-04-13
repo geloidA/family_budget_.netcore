@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 
-namespace family_budget.Models
+namespace family_budget.Models.DataBase
 {
     class DataContext : DbContext
     {

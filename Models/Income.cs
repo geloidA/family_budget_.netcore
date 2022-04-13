@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace family_budget.Models
 {
-    class Income : Transaction
+    public class Income : Transaction
     {
     }
 }
