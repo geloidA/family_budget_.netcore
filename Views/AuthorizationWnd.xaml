@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:family_budget.Views"
         xmlns:vm="clr-namespace:family_budget.ViewModels"
         mc:Ignorable="d"
-        Title="AuthorizationWnd" Height="450" Width="800">
+        Title="AuthorizationWnd" Height="450" Width="400">
     <Window.DataContext>
         <vm:AuthorizetionViewModel/>
     </Window.DataContext>
@@ -14,7 +14,18 @@
         <StackPanel>
             <TextBox Text="{Binding Login}"/>
             <TextBox Text="{Binding Password}"/>
-            <Button Command="{Binding AuthorizeUser}" Content="Авторизоваться"/>
+            <Button Command="{Binding Authorize}" Content="Авторизоваться"/>
+            <Button Foreground="Blue" 
+                    Command="{Binding OpenRegistrationPresentation}"
+                    Background="White"
+                    BorderBrush="White">
+                <TextBlock TextDecorations="Underline">Зарегистрироваться</TextBlock>
+            </Button>            
         </StackPanel>
+        <StatusBar VerticalAlignment="Bottom" FontFamily="Inter" >
+            <StatusBarItem>
+                <TextBlock Text="{Binding StatusBar}"/>
+            </StatusBarItem>
+        </StatusBar>
     </Grid>
 </Window>

@@ -13,12 +13,6 @@ namespace family_budget.Models
         public int Id { get; set; }
         public string FullName { get; set; }
         public string Password { get; set; }
-        public string Login { get; set; }
-
-        public static bool Authorize(User user)
-        {
-            var finded = DataWorker.Users.Find(u => u.Login == user.Login);
-            return finded?.Password == user.Password;
-        }
+        public string Login { get; set; }        
     }
 }
