@@ -1,0 +1,66 @@
+﻿<Window x:Class="family_budget.Views.RegistrationWnd"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:family_budget.Views"
+        xmlns:vm="clr-namespace:family_budget.ViewModels"
+        mc:Ignorable="d"
+        Title="RegistrationWnd" Height="300" Width="400">
+    <Window.DataContext>
+        <vm:RegistrationWndViewModel/>
+    </Window.DataContext>
+    <Grid>
+        <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+            <Grid Margin="5">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition Width="200"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Style="{StaticResource DefaultTextBlock}" 
+                       Text="Введите логин:"/>
+                <TextBox Text="{Binding Login}" 
+                    Margin="5 0 0 0" Grid.Column="1"/>
+            </Grid>
+            <Grid Margin="5">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition Width="200"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Style="{StaticResource DefaultTextBlock}" 
+                       Text="Введите пароль:"/>
+                <TextBox Text="{Binding Password}"
+                         Margin="5 0 0 0" Grid.Column="1"/>
+            </Grid>
+            <Grid Margin="5">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition Width="200"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Style="{StaticResource DefaultTextBlock}" 
+                       Text="Введите ФИО:"/>
+                <TextBox Text="{Binding FullName}" 
+                         Margin="5 0 0 0" Grid.Column="1"/>
+            </Grid>
+            <Grid Margin="5 20">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition Width="200"/>
+                </Grid.ColumnDefinitions>
+                <Button Command="{Binding Registrate}"
+                        HorizontalAlignment="Left"
+                        Width="100"
+                        Content="OK"/>
+
+                <Button Command="{Binding Cancel}"
+                        HorizontalAlignment="Right"
+                        Width="100"
+                        Content="Отмена" 
+                        Grid.Column="1"/>
+            </Grid>
+        </StackPanel>
+        <StatusBar VerticalAlignment="Bottom">
+            <TextBlock Style="{StaticResource DefaultTextBlock}" Text="{Binding StatusBar}"/>
+        </StatusBar>
+    </Grid>    
+</Window>

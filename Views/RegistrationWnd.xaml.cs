@@ -1,6 +1,6 @@
-﻿using family_budget.ViewModels;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -11,17 +11,16 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace family_budget
+namespace family_budget.Views
 {
     /// <summary>
-    /// Interaction logic for MainWindow.xaml
+    /// Interaction logic for RegistrationWnd.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class RegistrationWnd : Window
     {
-        public MainWindow()
+        public RegistrationWnd()
         {
             InitializeComponent();
         }

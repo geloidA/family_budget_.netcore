@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using DevExpress.Mvvm;
 
 namespace family_budget.Models
 {
-    class FamilyMember
+    public class FamilyMember : BindableBase
     {
         public int Id { get; set; }
         public string FullName { get; set; }
