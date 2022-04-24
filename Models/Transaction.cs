@@ -7,7 +7,7 @@ namespace family_budget.Models
     {
         public int Id { get; set; }
         public string Classification { get; set; }
-        public decimal Value { get; set; }
+        public double Value { get; set; }
         public int FamilyMemberId { get; set; }
         public DateTime Date { get; set; }
         public string Description { get; set; }

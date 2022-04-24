@@ -27,7 +27,7 @@ namespace family_budget.Services
             foreach (var pattern in patternsWithMessage.Keys)
             {
                 if (!Regex.IsMatch(line, pattern))
-                    builder.Append(patternsWithMessage[pattern] + " ");
+                    builder.Append(patternsWithMessage[pattern] + "\n");
             }
             message = builder.ToString();
 

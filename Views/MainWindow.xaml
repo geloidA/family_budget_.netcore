@@ -35,8 +35,24 @@
                     <ColumnDefinition/>
                 </Grid.ColumnDefinitions>
 
-                <lvc:PieChart DisableAnimations="True" />
-                <lvc:PieChart DisableAnimations="True" Grid.Column="1" Series="{Binding Expense}"/>
+                <lvc:PieChart DisableAnimations="True" 
+                              LegendLocation="Bottom"
+                              Series="{Binding Incomes}"/>
+
+                <Grid Grid.Column="1">
+                    <Grid.RowDefinitions>
+                        <RowDefinition/>
+                        <RowDefinition Height="0.05*"/>
+                    </Grid.RowDefinitions>
+                    <lvc:PieChart DisableAnimations="True" 
+                                  Grid.Column="1"
+                                  Series="{Binding Expense}"
+                                  LegendLocation="Bottom"/>
+                    <Button Grid.Row="1" HorizontalAlignment="Right" Background="White" BorderBrush="White"
+                            Command="{Binding OpenExpensesOverviewPresentation}">
+                        <TextBlock Style="{StaticResource DefaultTextBlock}" Text="Подробнее" FontSize="12"/>
+                    </Button>
+                </Grid>
             </Grid>
 
             <Grid Grid.Column="1">                
@@ -50,7 +66,7 @@
                    VerticalAlignment="Top"
                    HorizontalAlignment="Left"/>
 
-                    <ListBox FontFamily="Inter"  x:Name="LastActions" ItemsSource="{Binding Expense}" />
+                    <ListBox FontFamily="Inter"  x:Name="LastActions"/>
                 </StackPanel>
 
                 <StackPanel Grid.Row="1">

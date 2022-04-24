@@ -5,7 +5,7 @@ namespace family_budget.Models.DataBase
 {
     public static class DataWorker
     {
-        public static List<Expense> Expenses
+        public static IReadOnlyList<Expense> Expenses
         {
             get
             {
@@ -15,7 +15,7 @@ namespace family_budget.Models.DataBase
                 }
             }
         }
-        public static List<Income> Incomes
+        public static IReadOnlyList<Income> Incomes
         {
             get
             {
@@ -25,7 +25,7 @@ namespace family_budget.Models.DataBase
                 }
             }
         }
-        public static List<FamilyMember> FamilyMembers
+        public static IReadOnlyList<FamilyMember> FamilyMembers
         {
             get
             {
@@ -35,7 +35,7 @@ namespace family_budget.Models.DataBase
                 }
             }
         }
-        public static List<User> Users
+        public static IReadOnlyList<User> Users
         {
             get
             {
@@ -45,9 +45,10 @@ namespace family_budget.Models.DataBase
                 }
             }
         }
+
         public static bool TryFindUser(string login, string password, out User user)
         {
-            user = Users.Find(u => u.Login == login && u.Password == password);
+            user = Users.FirstOrDefault(u => u.Login == login && u.Password == password);
             return user != null;
         }
         public static void AddUser(User user)
