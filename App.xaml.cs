@@ -22,6 +22,7 @@ namespace family_budget
         public App()
         {
             DisplayRootRegistry.RegisterWindowType<MainWndViewModel, MainWindow>();
+            DisplayRootRegistry.RegisterWindowType<ExpensesOverviewWndViewModel, ExpensesOverviewWnd>();
             DisplayRootRegistry.RegisterWindowType<AuthorizetionViewModel, AuthorizationWnd>();
             DisplayRootRegistry.RegisterWindowType<RegistrationWndViewModel, RegistrationWnd>();
             MainWindowViewModel = new MainWndViewModel();

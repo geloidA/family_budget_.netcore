@@ -60,7 +60,19 @@
             </Grid>
         </StackPanel>
         <StatusBar VerticalAlignment="Bottom">
-            <TextBlock Style="{StaticResource DefaultTextBlock}" Text="{Binding StatusBar}"/>
+            <StatusBar.Style>
+                <Style TargetType="StatusBar">
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding ElementName=Message, Path=Text}" Value="Готово">
+                            <Setter Property="Background" Value="Green"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                    <Style.Setters>
+                        <Setter Property="Background" Value="Red"/>
+                    </Style.Setters>
+                </Style>
+            </StatusBar.Style>
+            <TextBlock Name="Message" Style="{StaticResource DefaultTextBlock}" Text="{Binding StatusBar}"/>
         </StatusBar>
     </Grid>    
 </Window>
