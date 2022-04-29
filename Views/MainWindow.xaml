@@ -28,6 +28,11 @@
                 <ColumnDefinition/>
                 <ColumnDefinition Width="280"/>
             </Grid.ColumnDefinitions>
+
+            <Grid.RowDefinitions>
+                <RowDefinition Height="0.9*"/>
+                <RowDefinition Height="0.05*"/>
+            </Grid.RowDefinitions>
             
             <Grid>
                 <Grid.ColumnDefinitions>
@@ -35,20 +40,38 @@
                     <ColumnDefinition/>
                 </Grid.ColumnDefinitions>
 
-                <lvc:PieChart DisableAnimations="True" 
-                              LegendLocation="Bottom"
-                              Series="{Binding Incomes}"/>
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition/>
+                        <RowDefinition Height="0.05*"/>
+                    </Grid.RowDefinitions>
+                    
+                    <lvc:PieChart DisableAnimations="True" 
+                                  MaxHeight="650"
+                                  MaxWidth="650"
+                                  LegendLocation="Bottom"
+                                  Series="{Binding Incomes}"/>
+
+                    <Button Grid.Row="1" HorizontalAlignment="Right" VerticalAlignment="Bottom" 
+                            Background="White" BorderBrush="White"
+                            Command="{Binding OpenExpensesOverviewPresentation}">
+                        <TextBlock Style="{StaticResource DefaultTextBlock}" Text="Подробнее" FontSize="12"/>
+                    </Button>
+                </Grid>
 
                 <Grid Grid.Column="1">
                     <Grid.RowDefinitions>
                         <RowDefinition/>
                         <RowDefinition Height="0.05*"/>
                     </Grid.RowDefinitions>
-                    <lvc:PieChart DisableAnimations="True" 
+                    <lvc:PieChart MaxHeight="650"
+                                  MaxWidth="650"
+                                  DisableAnimations="True" 
                                   Grid.Column="1"
                                   Series="{Binding Expense}"
                                   LegendLocation="Bottom"/>
-                    <Button Grid.Row="1" HorizontalAlignment="Right" Background="White" BorderBrush="White"
+                    <Button Grid.Row="1" HorizontalAlignment="Right" VerticalAlignment="Bottom" 
+                            Background="White" BorderBrush="White"
                             Command="{Binding OpenExpensesOverviewPresentation}">
                         <TextBlock Style="{StaticResource DefaultTextBlock}" Text="Подробнее" FontSize="12"/>
                     </Button>
@@ -76,6 +99,22 @@
 
                 </StackPanel>
             </Grid>
+
+            <StatusBar Grid.Row="1" Grid.ColumnSpan="2" VerticalAlignment="Bottom">
+                <StatusBar.Style>
+                    <Style TargetType="StatusBar">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding ElementName=Message, Path=Text}" Value="Готово">
+                                <Setter Property="Background" Value="Green"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                        <Style.Setters>
+                            <Setter Property="Background" Value="Red"/>
+                        </Style.Setters>
+                    </Style>
+                </StatusBar.Style>
+                <TextBlock Name="Message" Style="{StaticResource DefaultTextBlock}" Text="{Binding StatusBar}"/>
+            </StatusBar>
         </Grid>
     </Grid>
 </Window>

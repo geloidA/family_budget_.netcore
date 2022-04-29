@@ -15,7 +15,7 @@ namespace family_budget.ViewModels
     public class MainWndViewModel : ViewModelBase
     {
         public User User { get; set; }
-        public string StatusBar { get; set; }
+        public string StatusBar { get; set; } = "Готово";
         public SeriesCollection Expense { get; set; }
         public SeriesCollection Incomes { get; set; }
 
@@ -53,18 +53,39 @@ namespace family_budget.ViewModels
 
         public void AddExpense(Expense newExpense)
         {
-            if (newExpense == null)
-                throw new NullReferenceException("Expense was null");
+            AddTransactionIn(newExpense, AmountsGroupedExpenses);
 
-            AmountsGroupedExpenses[newExpense.Classification].Value += newExpense.Value;
+            Expense.Add(new PieSeries
+            {
+                Title = newExpense.Classification,
+                Values = new ChartValues<ObservableValue> { AmountsGroupedExpenses[newExpense.Classification] }
+            });
+
+            DataWorker.AddExpense(newExpense);
         }
 
         public void AddIncome(Income newIncome)
         {
-            if (newIncome == null)
-                throw new NullReferenceException("Income was null");
+            AddTransactionIn(newIncome, AmountsGroupedIncomes);
 
-            AmountsGroupedIncomes[newIncome.Classification].Value += newIncome.Value;
+            Incomes.Add(new PieSeries
+            {
+                Title = newIncome.Classification,
+                Values = new ChartValues<ObservableValue> { AmountsGroupedIncomes[newIncome.Classification] }
+            });
+
+            DataWorker.AddIncome(newIncome);
+        }
+
+        private void AddTransactionIn(Transaction transaction, Dictionary<string, ObservableValue> targetDict)
+        {
+            if(transaction == null)
+                throw new NullReferenceException("Transaction was null");
+
+            if (targetDict.ContainsKey(transaction.Classification))
+                targetDict[transaction.Classification].Value += transaction.Value;
+            else
+                targetDict.Add(transaction.Classification, new ObservableValue(transaction.Value));
         }
 
         public ICommand OpenAuthorizationPresentation

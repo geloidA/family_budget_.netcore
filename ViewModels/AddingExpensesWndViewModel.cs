@@ -2,10 +2,7 @@
 using family_budget.Models;
 using family_budget.Models.DataBase;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Input;
 
@@ -15,15 +12,17 @@ namespace family_budget.ViewModels
     {
         private MainWndViewModel mainWndViewModel;
 
+        public ObservableCollection<FamilyMember> FamilyMembers{ get; set; }
+        public FamilyMember SelectedFamilyMember { get; set; }
         public string Classification { get; set; }
         public double Value { get; set; }
-        public int FamilyMemberId { get; set; }
-        public DateTime Date { get; set; }
+        public DateTime Date { get; set; } = DateTime.Now;
         public string Description { get; set; }
 
         public AddingExpensesWndViewModel()
         {
             mainWndViewModel = (Application.Current as App).MainWindowViewModel;
+            FamilyMembers = new ObservableCollection<FamilyMember>(DataWorker.FamilyMembers);
         }
 
         public ICommand AddExpense
@@ -35,15 +34,14 @@ namespace family_budget.ViewModels
                     Date = this.Date,
                     Value = this.Value,
                     Description = this.Description,
-                    FamilyMemberId = this.FamilyMemberId
+                    FamilyMemberId = SelectedFamilyMember.Id
                 };
 
-                DataWorker.AddExpense(newExpenses);
                 mainWndViewModel.AddExpense(newExpenses);
-            }, 
-            () => !IsExpenseDataFilled);
+            },
+            () => IsExpenseDataFilled);
 
-        private bool IsExpenseDataFilled =>
-            this.Classification.Length > 0 || Value > 0 || FamilyMemberId > 0;
+        private bool IsExpenseDataFilled => Value > 0 && SelectedFamilyMember != null
+            && !string.IsNullOrEmpty(Classification);
     }
 }

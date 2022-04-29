@@ -5,8 +5,30 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:family_budget.Views"
         mc:Ignorable="d"
+        xmlns:vm="clr-namespace:family_budget.ViewModels"
+        xmlns:lvc="clr-namespace:LiveCharts.Wpf;assembly=LiveCharts.Wpf"
         Title="ExpensesOverviewWnd" Height="450" Width="800">
+    <Window.DataContext>
+        <vm:ExpensesOverviewWndViewModel/>
+    </Window.DataContext>
     <Grid>
-        
+        <Grid.RowDefinitions>
+            <RowDefinition/>
+            <RowDefinition Height="0.1*"/>
+        </Grid.RowDefinitions>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+
+            <lvc:CartesianChart>
+                
+            </lvc:CartesianChart>
+
+            <DataGrid Grid.Column="1">
+                
+            </DataGrid>
+        </Grid>
     </Grid>
 </Window>
