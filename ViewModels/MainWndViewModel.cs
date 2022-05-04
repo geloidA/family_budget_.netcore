@@ -6,6 +6,7 @@ using LiveCharts.Defaults;
 using LiveCharts.Wpf;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows;
 using System.Windows.Input;
@@ -15,9 +16,11 @@ namespace family_budget.ViewModels
     public class MainWndViewModel : ViewModelBase
     {
         public User User { get; set; }
-        public string StatusBar { get; set; }
-        public SeriesCollection Expense { get; set; }
+        public string StatusBar { get; set; } = "Готово";
+        public SeriesCollection Expenses { get; set; }
         public SeriesCollection Incomes { get; set; }
+        public ObservableCollection<Transaction> LastTransactions
+            => new ObservableCollection<Transaction>(DataWorker.Transactions.Take(10));
 
         private readonly Dictionary<string, ObservableValue> AmountsGroupedExpenses;
         private readonly Dictionary<string, ObservableValue> AmountsGroupedIncomes;
@@ -25,13 +28,13 @@ namespace family_budget.ViewModels
         public MainWndViewModel()
         {
             AmountsGroupedExpenses = new Dictionary<string, ObservableValue>(DataWorker.Expenses.GroupBy(e => e.Classification)
-                .Select(g => new KeyValuePair<string, ObservableValue>(g.Key, new ObservableValue(g.Sum(e => e.Value)))));
+                .Select(g => new KeyValuePair<string, ObservableValue>(g.Key, new ObservableValue(g.Sum(e => e.Cost)))));
 
             AmountsGroupedIncomes = new Dictionary<string, ObservableValue>(DataWorker.Incomes.GroupBy(e => e.Classification)
-                .Select(g => new KeyValuePair<string, ObservableValue>(g.Key, new ObservableValue(g.Sum(e => e.Value)))));
+                .Select(g => new KeyValuePair<string, ObservableValue>(g.Key, new ObservableValue(g.Sum(e => e.Cost)))));
 
-            Expense = new SeriesCollection();
-            Expense.AddRange(AmountsGroupedExpenses.Select(pair =>
+            Expenses = new SeriesCollection();
+            Expenses.AddRange(AmountsGroupedExpenses.Select(pair =>
             {
                 return new PieSeries
                 {
@@ -53,18 +56,53 @@ namespace family_budget.ViewModels
 
         public void AddExpense(Expense newExpense)
         {
-            if (newExpense == null)
-                throw new NullReferenceException("Expense was null");
+            var isExisted = AddTransactionIn(newExpense, AmountsGroupedExpenses);
 
-            AmountsGroupedExpenses[newExpense.Classification].Value += newExpense.Value;
+            if (!isExisted)
+            {
+                Expenses.Add(new PieSeries
+                {
+                    Title = newExpense.Classification,
+                    Values = new ChartValues<ObservableValue> { AmountsGroupedExpenses[newExpense.Classification] }
+                });
+            }
+
+            DataWorker.AddExpense(newExpense);
+            LastTransactions.Clear();
         }
 
         public void AddIncome(Income newIncome)
         {
-            if (newIncome == null)
-                throw new NullReferenceException("Income was null");
+            var isExisted = AddTransactionIn(newIncome, AmountsGroupedIncomes);
 
-            AmountsGroupedIncomes[newIncome.Classification].Value += newIncome.Value;
+            if (!isExisted)
+            {
+                Incomes.Add(new PieSeries
+                {
+                    Title = newIncome.Classification,
+                    Values = new ChartValues<ObservableValue> { AmountsGroupedIncomes[newIncome.Classification] }
+                });
+            }
+
+            DataWorker.AddIncome(newIncome);
+            LastTransactions.Add(newIncome);
+        }
+
+        private bool AddTransactionIn(Transaction transaction, Dictionary<string, ObservableValue> targetDict)
+        {
+            if(transaction == null)
+                throw new NullReferenceException("Transaction was null");
+
+            if (targetDict.ContainsKey(transaction.Classification))
+            {
+                targetDict[transaction.Classification].Value += transaction.Cost;
+                return true;
+            }
+            else
+            {
+                targetDict.Add(transaction.Classification, new ObservableValue(transaction.Cost));
+                return false;
+            }
         }
 
         public ICommand OpenAuthorizationPresentation

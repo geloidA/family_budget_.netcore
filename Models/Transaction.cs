@@ -7,9 +7,14 @@ namespace family_budget.Models
     {
         public int Id { get; set; }
         public string Classification { get; set; }
-        public double Value { get; set; }
+        public double Cost { get; set; }
         public int FamilyMemberId { get; set; }
         public DateTime Date { get; set; }
         public string Description { get; set; }
+
+        public override string ToString()
+        {
+            return string.Join('\t', Classification, Cost, Date.ToShortDateString());
+        }
     }
 }

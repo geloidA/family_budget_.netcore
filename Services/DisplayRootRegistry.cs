@@ -78,7 +78,7 @@ namespace family_budget.Services
         public async Task ShowModalPresentation(object vm)
         {
             var window = CreateWindowInstanceWithVM(vm);
-            window.WindowStartupLocation = WindowStartupLocation.CenterScreen;
+            window.WindowStartupLocation = WindowStartupLocation.CenterOwner;
             await window.Dispatcher.InvokeAsync(() => window.ShowDialog());
         }
     }

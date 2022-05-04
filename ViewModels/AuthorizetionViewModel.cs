@@ -14,7 +14,7 @@ namespace family_budget.ViewModels
     {
         public string Login { get; set; }
         public string Password { get; set; }
-        public string StatusBar { get; set; }
+        public string StatusBar { get; set; } = "Готово";
         public ICommand Authorize
         {
             get
