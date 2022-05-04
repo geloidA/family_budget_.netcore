@@ -5,9 +5,13 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:family_budget"
         xmlns:vm="clr-namespace:family_budget.ViewModels"
+        xmlns:sc="clr-namespace:family_budget.Services"
         xmlns:lvc="clr-namespace:LiveCharts.Wpf;assembly=LiveCharts.Wpf"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="MainWindow" Height="450" Width="800" WindowStartupLocation="CenterScreen">
+    <Window.Resources>
+        <sc:DateTimeToDateConverter x:Key="dateConverter"/>
+    </Window.Resources>
     <Window.DataContext>
         <vm:MainWndViewModel/>
     </Window.DataContext>
@@ -68,7 +72,7 @@
                                   MaxWidth="650"
                                   DisableAnimations="True" 
                                   Grid.Column="1"
-                                  Series="{Binding Expense}"
+                                  Series="{Binding Expenses}"
                                   LegendLocation="Bottom"/>
                     <Button Grid.Row="1" HorizontalAlignment="Right" VerticalAlignment="Bottom" 
                             Background="White" BorderBrush="White"
@@ -89,7 +93,24 @@
                    VerticalAlignment="Top"
                    HorizontalAlignment="Left"/>
 
-                    <ListBox FontFamily="Inter"  x:Name="LastActions"/>
+                    <ItemsControl ItemsSource="{Binding LastTransactions}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <UniformGrid Columns="3">
+                                    <UniformGrid.Resources>
+                                        <Style TargetType="TextBlock">
+                                            <Setter Property="HorizontalAlignment" Value="Right"/>
+                                            <Setter Property="FontFamily" Value="Inter"/>
+                                            <Setter Property="FontSize" Value="11"/>
+                                        </Style>
+                                    </UniformGrid.Resources>
+                                    <TextBlock Text="{Binding Classification}"/>
+                                    <TextBlock Text="{Binding Cost, StringFormat={}{0} руб.}"/>
+                                    <TextBlock Text="{Binding Date, Converter={StaticResource dateConverter}}"/>
+                                </UniformGrid>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
                 </StackPanel>
 
                 <StackPanel Grid.Row="1">

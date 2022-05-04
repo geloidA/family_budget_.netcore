@@ -45,6 +45,38 @@ namespace family_budget.Models.DataBase
                 }
             }
         }
+        public static IReadOnlyList<ExpenseJoinFM> ExpensesJoinFamilyMembers
+        {
+            get
+            {
+                using (var contxt = new DataContext())
+                {
+                    return contxt.Expenses.Join(
+                        contxt.FamilyMembers,
+                        e => e.FamilyMemberId,
+                        f => f.Id,
+                        (e, f) => new ExpenseJoinFM
+                        {
+                            Classification = e.Classification,
+                            Cost = e.Cost,
+                            Date = e.Date,
+                            Description = e.Description,
+                            FamilyRole = f.FamilyRole
+                        })
+                        .ToList();
+                }
+            }
+        }
+
+        public static IEnumerable<Transaction> Transactions
+        {
+            get
+            {
+                return Expenses.Select(e => (Transaction)e)
+                    .Concat(Incomes)
+                    .OrderByDescending(t => t.Date);
+            }
+        }
 
         public static bool TryFindUser(string login, string password, out User user)
         {
