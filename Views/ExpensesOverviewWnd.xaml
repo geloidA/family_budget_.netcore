@@ -16,34 +16,53 @@
         <vm:ExpensesOverviewWndViewModel/>
     </Window.DataContext>
     <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition/>
-            <RowDefinition Height="0.1*"/>
-        </Grid.RowDefinitions>
-        <Grid>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="1.7*"/>
-                <ColumnDefinition/>
-            </Grid.ColumnDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="1.7*"/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
 
-            <lvc:CartesianChart>
-                
-            </lvc:CartesianChart>
+        <lvc:CartesianChart>
 
-            <DataGrid Grid.Column="1" ItemsSource="{Binding Expenses}" 
+        </lvc:CartesianChart>
+        
+        <Grid Grid.Column="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="0.05*"/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+
+            <UniformGrid Columns="3">
+                <Button Command="{Binding OpenAddingExpensesPresentation}">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Style="{StaticResource DefaultTextBlock}"
+                               Text="Добавить"
+                               FontSize="12"/>
+                        <ContentControl Content="{StaticResource PlusIcon}"/>
+                    </StackPanel>
+                </Button>
+                <Button Command="{Binding DeleteExpense}">
+                    <TextBlock Style="{StaticResource DefaultTextBlock}"
+                               Text="Удалить"
+                               FontSize="12"/>
+                </Button>
+                <Button >
+                    <TextBlock Style="{StaticResource DefaultTextBlock}"
+                               Text="Изменить"
+                               FontSize="12"/>
+                </Button>
+            </UniformGrid>
+
+            <DataGrid Grid.Row="1" ItemsSource="{Binding Expenses}" 
                       AutoGenerateColumns="False" FontFamily="Inter"
-                      IsReadOnly="True">
+                      IsReadOnly="True"
+                      SelectedItem="{Binding SelectedExpenseJoinFM}">
                 <DataGrid.Columns>
                     <DataGridTextColumn Header="Владелец" Binding="{Binding FamilyRole}"/>
                     <DataGridTextColumn Header="Классификация" Binding="{Binding Classification}"/>
                     <DataGridTextColumn Header="Величина, руб." Binding="{Binding Cost}"/>
                     <DataGridTextColumn Header="Дата" Binding="{Binding Date, Converter={StaticResource dateConverter}}"/>
                 </DataGrid.Columns>
-                
             </DataGrid>
-        </Grid>
-        <Grid Grid.Row="1">
-            <Button Content="Добавить расход" Command="{Binding OpenAddingExpensesPresentation}"/>
-        </Grid>
+        </Grid>        
     </Grid>
 </Window>

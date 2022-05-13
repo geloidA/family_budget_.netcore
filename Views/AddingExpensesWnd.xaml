@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:family_budget.Views"
         mc:Ignorable="d"        
         xmlns:vm="clr-namespace:family_budget.ViewModels"
-        Title="AddingExpensesWnd" Height="450" Width="300">
+        Title="AddingExpensesWnd" Height="450" Width="300" WindowStartupLocation="CenterOwner">
     <Window.DataContext>
         <vm:AddingExpensesWndViewModel/>
     </Window.DataContext>
