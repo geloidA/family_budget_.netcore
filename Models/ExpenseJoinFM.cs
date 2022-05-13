@@ -5,6 +5,7 @@ namespace family_budget.Models
 {
     public class ExpenseJoinFM : BindableBase
     {
+        public int ExpenseId { get; set; }
         public string Classification { get; set; }
         public double Cost { get; set; }
         public string FamilyRole { get; set; }

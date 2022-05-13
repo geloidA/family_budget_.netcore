@@ -57,6 +57,7 @@ namespace family_budget.Models.DataBase
                         f => f.Id,
                         (e, f) => new ExpenseJoinFM
                         {
+                            ExpenseId = e.Id,
                             Classification = e.Classification,
                             Cost = e.Cost,
                             Date = e.Date,
@@ -112,6 +113,52 @@ namespace family_budget.Models.DataBase
             using (var context = new DataContext())
             {
                 context.FamilyMembers.Add(familyMember);
+                context.SaveChanges();
+            }
+        }
+        public static void RemoveUser(User user)
+        {
+            using(var context = new DataContext())
+            {
+                context.Users.Remove(user);
+                context.SaveChanges();
+            }
+        }
+
+        public static void RemoveExpense(Expense expense)
+        {
+            using( var context = new DataContext())
+            {
+                context.Expenses.Remove(expense);
+                context.SaveChanges();
+            }
+        }
+
+        public static void RemoveIncome(Income income)
+        {
+            using(var context = new DataContext())
+            {
+                context.Incomes.Remove(income);
+                context.SaveChanges();
+            }
+        }
+
+        public static void RemoveFamilyMember(FamilyMember familyMember)
+        {
+            using (var context = new DataContext())
+            {
+                context.FamilyMembers.Remove(familyMember);
+                context.SaveChanges();
+            }
+        }
+
+        public static void UpdateUser(User user, User newUser)
+        {
+            using(var context = new DataContext())
+            {
+                user.FullName = newUser.FullName;
+                user.Password = newUser.Password;
+                user.Login = newUser.Login;
                 context.SaveChanges();
             }
         }

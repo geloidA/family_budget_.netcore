@@ -40,7 +40,7 @@ namespace family_budget.Migrations
                     b.Property<int?>("FamilyMemberId")
                         .HasColumnType("int");
 
-                    b.Property<decimal>("Value")
+                    b.Property<decimal>("Cost")
                         .HasColumnType("decimal(18,2)");
 
                     b.HasKey("Id");
@@ -87,7 +87,7 @@ namespace family_budget.Migrations
                     b.Property<int?>("FamilyMemberId")
                         .HasColumnType("int");
 
-                    b.Property<decimal>("Value")
+                    b.Property<decimal>("Cost")
                         .HasColumnType("decimal(18,2)");
 
                     b.HasKey("Id");

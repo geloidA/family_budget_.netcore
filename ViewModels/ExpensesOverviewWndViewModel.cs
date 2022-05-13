@@ -15,10 +15,12 @@ namespace family_budget.ViewModels
     internal class ExpensesOverviewWndViewModel : ViewModelBase
     {
         public ObservableCollection<ExpenseJoinFM> Expenses { get; set; }
+        public ExpenseJoinFM SelectedExpenseJoinFM { get; set; }
 
         public ExpensesOverviewWndViewModel()
         {
             Expenses = new ObservableCollection<ExpenseJoinFM>(DataWorker.ExpensesJoinFamilyMembers);
+            SelectedExpenseJoinFM = Expenses.FirstOrDefault();
         }
 
         public ICommand OpenAddingExpensesPresentation
@@ -30,6 +32,20 @@ namespace family_budget.ViewModels
                     var rootRegistry = (Application.Current as App).DisplayRootRegistry;
                     await rootRegistry.ShowModalPresentation(new AddingExpensesWndViewModel());
                 });
+            }
+        }
+
+        public ICommand DeleteExpense
+        {
+            get
+            {
+                return new DelegateCommand(() =>
+                {
+                    Expenses.Remove(SelectedExpenseJoinFM);
+                    var toRemove = DataWorker.Expenses.FirstOrDefault(e => e.Id == SelectedExpenseJoinFM.ExpenseId);
+                    DataWorker.RemoveExpense(toRemove);
+                },
+                () => SelectedExpenseJoinFM != null);
             }
         }
     }
