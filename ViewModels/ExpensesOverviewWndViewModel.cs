@@ -1,6 +1,7 @@
 ﻿using DevExpress.Mvvm;
 using family_budget.Models;
 using family_budget.Models.DataBase;
+using family_budget.ViewModels.Abstract;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -12,18 +13,16 @@ using System.Windows.Input;
 
 namespace family_budget.ViewModels
 {
-    internal class ExpensesOverviewWndViewModel : ViewModelBase
+    internal class ExpensesOverviewWndViewModel : TransactionOverviewModel
     {
-        public ObservableCollection<ExpenseJoinFM> Expenses { get; set; }
-        public ExpenseJoinFM SelectedExpenseJoinFM { get; set; }
-
         public ExpensesOverviewWndViewModel()
         {
-            Expenses = new ObservableCollection<ExpenseJoinFM>(DataWorker.ExpensesJoinFamilyMembers);
-            SelectedExpenseJoinFM = Expenses.FirstOrDefault();
+            //TODO: Inizialization
+            Transactions = new ObservableCollection<TransactionJoinFM>(DataWorker.ExpensesJoinFamilyMembers);
+            SelectedTransactionJoinFM = Transactions.FirstOrDefault();
         }
 
-        public ICommand OpenAddingExpensesPresentation
+        public override ICommand OpenAddingTransactionPresentation
         {
             get
             {
@@ -35,17 +34,17 @@ namespace family_budget.ViewModels
             }
         }
 
-        public ICommand DeleteExpense
+        public override ICommand DeleteTransaction
         {
             get
             {
                 return new DelegateCommand(() =>
                 {
-                    Expenses.Remove(SelectedExpenseJoinFM);
-                    var toRemove = DataWorker.Expenses.FirstOrDefault(e => e.Id == SelectedExpenseJoinFM.ExpenseId);
+                    Transactions.Remove(SelectedTransactionJoinFM);
+                    var toRemove = DataWorker.Expenses.FirstOrDefault(e => e.Id == SelectedTransactionJoinFM.TransactionId);
                     DataWorker.RemoveExpense(toRemove);
                 },
-                () => SelectedExpenseJoinFM != null);
+                () => SelectedTransactionJoinFM != null);
             }
         }
     }
