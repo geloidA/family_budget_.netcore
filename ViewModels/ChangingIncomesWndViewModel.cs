@@ -1,6 +1,5 @@
 ﻿using DevExpress.Mvvm;
 using family_budget.Models;
-using family_budget.Models.DataBase;
 using family_budget.ViewModels.Abstract;
 using System;
 using System.Collections.Generic;
@@ -11,18 +10,18 @@ using System.Windows.Input;
 
 namespace family_budget.ViewModels
 {
-    internal class ChangingExpensesWndViewModel : ChangingTransactionViewModel
+    internal class ChangingIncomesWndViewModel : ChangingTransactionViewModel
     {
-        public ChangingExpensesWndViewModel(Transaction changeExpense) : base(changeExpense)
+        public ChangingIncomesWndViewModel(Transaction changeIncome) : base(changeIncome)
         {
-            if(changeExpense is not Expense)
-                throw new ArgumentException(nameof(changeExpense));
+            if(changeIncome is not Income)
+                throw new ArgumentException(nameof(changeIncome));
         }
 
         public override ICommand Command => 
             new DelegateCommand(() =>
             {
-                var expense = _changeTransaction as Expense;
+                var income = _changeTransaction as Income;
                 //TODO
             });
     }

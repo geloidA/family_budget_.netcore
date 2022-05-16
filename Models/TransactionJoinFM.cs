@@ -3,9 +3,9 @@ using System;
 
 namespace family_budget.Models
 {
-    public class ExpenseJoinFM : BindableBase
+    public class TransactionJoinFM : BindableBase
     {
-        public int ExpenseId { get; set; }
+        public int TransactionId { get; set; }
         public string Classification { get; set; }
         public double Cost { get; set; }
         public string FamilyRole { get; set; }

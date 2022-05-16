@@ -1,5 +1,6 @@
 ﻿using DevExpress.Mvvm;
 using family_budget.Models;
+using family_budget.ViewModels.Abstract;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,9 +10,9 @@ using System.Windows.Input;
 
 namespace family_budget.ViewModels
 {
-    internal class AddingIncomesWndViewModel : AddingTransactionModel
+    internal class AddingIncomesWndViewModel : AddingTransactionViewModel
     {
-        public override ICommand AddTransaction => new DelegateCommand(() =>
+        public override ICommand Command => new DelegateCommand(() =>
         {
             var newIncome = new Income
             {
@@ -21,6 +22,8 @@ namespace family_budget.ViewModels
                 Description = this.Description,
                 FamilyMemberId = SelectedFamilyMember.Id
             };
+
+            //TODO DataInProgram
             mainWndViewModel.AddIncome(newIncome);
 
         }, () => IsCanExecute);

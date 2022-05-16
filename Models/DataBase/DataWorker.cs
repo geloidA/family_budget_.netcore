@@ -45,7 +45,7 @@ namespace family_budget.Models.DataBase
                 }
             }
         }
-        public static IReadOnlyList<ExpenseJoinFM> ExpensesJoinFamilyMembers
+        public static IReadOnlyList<TransactionJoinFM> ExpensesJoinFamilyMembers
         {
             get
             {
@@ -55,9 +55,9 @@ namespace family_budget.Models.DataBase
                         contxt.FamilyMembers,
                         e => e.FamilyMemberId,
                         f => f.Id,
-                        (e, f) => new ExpenseJoinFM
+                        (e, f) => new TransactionJoinFM
                         {
-                            ExpenseId = e.Id,
+                            TransactionId = e.Id,
                             Classification = e.Classification,
                             Cost = e.Cost,
                             Date = e.Date,
