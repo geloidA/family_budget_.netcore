@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace family_budget.Models.DataBase
@@ -68,7 +69,6 @@ namespace family_budget.Models.DataBase
                 }
             }
         }
-
         public static IEnumerable<Transaction> Transactions
         {
             get
@@ -78,6 +78,8 @@ namespace family_budget.Models.DataBase
                     .OrderByDescending(t => t.Date);
             }
         }
+
+        public static event Action TransactionsIsChanged;
 
         public static bool TryFindUser(string login, string password, out User user)
         {
@@ -99,6 +101,7 @@ namespace family_budget.Models.DataBase
                 context.Expenses.Add(expense);
                 context.SaveChanges();
             }
+            TransactionsIsChanged();
         }
         public static void AddIncome(Income income)
         {
@@ -107,6 +110,7 @@ namespace family_budget.Models.DataBase
                 context.Incomes.Add(income);
                 context.SaveChanges();
             }
+            TransactionsIsChanged();
         }
         public static void AddFamilyMember(FamilyMember familyMember)
         {
@@ -118,31 +122,30 @@ namespace family_budget.Models.DataBase
         }
         public static void RemoveUser(User user)
         {
-            using(var context = new DataContext())
+            using (var context = new DataContext())
             {
                 context.Users.Remove(user);
                 context.SaveChanges();
             }
         }
-
         public static void RemoveExpense(Expense expense)
         {
-            using( var context = new DataContext())
+            using (var context = new DataContext())
             {
                 context.Expenses.Remove(expense);
                 context.SaveChanges();
             }
+            TransactionsIsChanged();
         }
-
         public static void RemoveIncome(Income income)
         {
-            using(var context = new DataContext())
+            using (var context = new DataContext())
             {
                 context.Incomes.Remove(income);
                 context.SaveChanges();
             }
+            TransactionsIsChanged();
         }
-
         public static void RemoveFamilyMember(FamilyMember familyMember)
         {
             using (var context = new DataContext())
@@ -151,15 +154,51 @@ namespace family_budget.Models.DataBase
                 context.SaveChanges();
             }
         }
-
-        public static void UpdateUser(User user, User newUser)
+        public static void UpdateUser(User toUpdate, User from)
         {
-            using(var context = new DataContext())
+            using (var context = new DataContext())
             {
-                user.FullName = newUser.FullName;
-                user.Password = newUser.Password;
-                user.Login = newUser.Login;
+                toUpdate.FullName = from.FullName;
+                toUpdate.Password = from.Password;
+                toUpdate.Login = from.Login;
                 context.SaveChanges();
+            }
+        }
+        public static void UpdateIncome(int toUpdateId, Income from)
+        {
+            using (var context = new DataContext())
+            {
+                var toUpdate = context.Incomes.SingleOrDefault(e => e.Id == toUpdateId);
+
+                UpdateTransaction(toUpdate, from);
+                context.SaveChanges();
+            }
+        }
+        public static void UpdateExpense(int toUpdateId, Expense from)
+        {
+            using (var context = new DataContext())
+            {
+                var toUpdate = context.Expenses.SingleOrDefault(e => e.Id == toUpdateId);
+
+                UpdateTransaction(toUpdate, from);
+                context.SaveChanges();
+            }
+        }
+        private static void UpdateTransaction(Transaction toUpdate, Transaction from)
+        {
+            toUpdate.Classification = from.Classification;
+            toUpdate.FamilyMemberId = from.FamilyMemberId;
+            toUpdate.Date = from.Date;
+            toUpdate.Description = from.Description;
+            toUpdate.Cost = from.Cost;
+        }
+        public static void UpdateFamilyMember(FamilyMember toUpdate, FamilyMember from)
+        {
+            using (var contxt = new DataContext())
+            {
+                toUpdate.FullName = from.FullName;
+                toUpdate.FamilyRole = from.FamilyRole;
+                contxt.SaveChanges();
             }
         }
     }

@@ -15,7 +15,7 @@ namespace family_budget.ViewModels
     {
         public IncomesOverviewWndViewModel()
         {
-            //TODO: Сделать инициализацию DataInProgram
+            //TODO: Сделать инициализацию через DataInProgram
             Transactions = new ObservableCollection<TransactionJoinFM>();
             SelectedTransactionJoinFM = Transactions.FirstOrDefault();
         }

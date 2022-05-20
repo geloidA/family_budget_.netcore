@@ -25,6 +25,9 @@ namespace family_budget
             DisplayRootRegistry.RegisterWindowType<AddingExpensesWndViewModel, AddingExpensesWnd>();
             DisplayRootRegistry.RegisterWindowType<AddingIncomesWndViewModel, AddingIncomesWnd>();
             DisplayRootRegistry.RegisterWindowType<ExpensesOverviewWndViewModel, ExpensesOverviewWnd>();
+            DisplayRootRegistry.RegisterWindowType<IncomesOverviewWndViewModel, IncomesOverviewWnd>();
+            DisplayRootRegistry.RegisterWindowType<ChangingExpenseWndViewModel, ChangingExpenseWnd>();
+            DisplayRootRegistry.RegisterWindowType<ChangingIncomeWndViewModel, ChangingIncomeWnd>();
             DisplayRootRegistry.RegisterWindowType<AuthorizetionViewModel, AuthorizationWnd>();
             DisplayRootRegistry.RegisterWindowType<RegistrationWndViewModel, RegistrationWnd>();
             MainWindowViewModel = new MainWndViewModel();
