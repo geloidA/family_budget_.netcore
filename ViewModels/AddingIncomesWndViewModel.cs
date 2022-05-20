@@ -10,7 +10,7 @@ using System.Windows.Input;
 
 namespace family_budget.ViewModels
 {
-    internal class AddingIncomesWndViewModel : AddingTransactionViewModel
+    internal class AddingIncomesWndViewModel : BaseTransactionViewModel
     {
         public override ICommand Command => new DelegateCommand(() =>
         {
@@ -27,7 +27,5 @@ namespace family_budget.ViewModels
             mainWndViewModel.AddIncome(newIncome);
 
         }, () => IsCanExecute);
-        public override bool IsCanExecute => Cost > 0 && SelectedFamilyMember != null
-            && !string.IsNullOrEmpty(Classification);
     }
 }

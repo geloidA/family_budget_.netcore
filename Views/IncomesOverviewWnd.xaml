@@ -32,7 +32,7 @@
             </Grid.RowDefinitions>
 
             <UniformGrid Columns="3">
-                <Button Command="{Binding OpenAddingExpensesPresentation}">
+                <Button Command="{Binding OpenAddingTransactionPresentation}">
                     <StackPanel Orientation="Horizontal">
                         <TextBlock Style="{StaticResource DefaultTextBlock}"
                                Text="Добавить"
@@ -40,22 +40,22 @@
                         <ContentControl Content="{StaticResource PlusIcon}"/>
                     </StackPanel>
                 </Button>
-                <Button Command="{Binding DeleteExpense}">
+                <Button Command="{Binding DeleteTransaction}">
                     <TextBlock Style="{StaticResource DefaultTextBlock}"
                                Text="Удалить"
                                FontSize="12"/>
                 </Button>
-                <Button >
+                <Button Command="{Binding ChangeTransaction}">
                     <TextBlock Style="{StaticResource DefaultTextBlock}"
                                Text="Изменить"
                                FontSize="12"/>
                 </Button>
             </UniformGrid>
 
-            <DataGrid Grid.Row="1" ItemsSource="{Binding Expenses}" 
+            <DataGrid Grid.Row="1" ItemsSource="{Binding Transactions}" 
                       AutoGenerateColumns="False" FontFamily="Inter"
                       IsReadOnly="True"
-                      SelectedItem="{Binding SelectedExpenseJoinFM}">
+                      SelectedItem="{Binding SelectedTransactionJoinFM}">
                 <DataGrid.Columns>
                     <DataGridTextColumn Header="Владелец" Binding="{Binding FamilyRole}"/>
                     <DataGridTextColumn Header="Классификация" Binding="{Binding Classification}"/>

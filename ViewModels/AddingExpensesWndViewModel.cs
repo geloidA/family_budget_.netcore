@@ -1,11 +1,12 @@
 ﻿using DevExpress.Mvvm;
 using family_budget.Models;
+using family_budget.Services;
 using family_budget.ViewModels.Abstract;
 using System.Windows.Input;
 
 namespace family_budget.ViewModels
 {
-    internal class AddingExpensesWndViewModel : AddingTransactionViewModel
+    internal class AddingExpensesWndViewModel : BaseTransactionViewModel
     {
         public override ICommand Command => new DelegateCommand(() =>
         {
@@ -21,8 +22,5 @@ namespace family_budget.ViewModels
             //TODO Переделать на DataInProgram
             mainWndViewModel.AddExpense(newExpenses);
         }, () => IsCanExecute);
-
-        public override bool IsCanExecute => Cost > 0 && SelectedFamilyMember != null
-            && !string.IsNullOrEmpty(Classification);
     }
 }

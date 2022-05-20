@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -16,11 +15,11 @@ using System.Windows.Shapes;
 namespace family_budget.Views
 {
     /// <summary>
-    /// Interaction logic for AddingIncomesWnd.xaml
+    /// Interaction logic for ChangingExpenseWnd.xaml
     /// </summary>
-    public partial class AddingIncomesWnd : Window
+    public partial class ChangingExpenseWnd : Window
     {
-        public AddingIncomesWnd()
+        public ChangingExpenseWnd()
         {
             InitializeComponent();
         }

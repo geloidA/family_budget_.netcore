@@ -14,17 +14,5 @@ namespace family_budget.Views
         {
             InitializeComponent();
         }
-
-        private static readonly Regex _regex = new Regex("[^0-9.-]+");
-
-        private void OnlyNumericTextPasting(object sender, TextCompositionEventArgs e)
-        {
-            e.Handled = IsTextAllowed(e.Text);
-        }
-
-        private static bool IsTextAllowed(string text)
-        {
-            return _regex.IsMatch(text);
-        }
     }
 }

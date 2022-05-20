@@ -28,7 +28,7 @@
             <Label Style="{StaticResource DefaultLabel}" 
                    Content="Стоимость" FontSize="12"/>
             <TextBox Margin="0 5 0 5"
-                     PreviewTextInput="OnlyNumericTextPasting"
+                     PreviewTextInput="{Binding textBoxesInput.OnlyNumericTextPasting}"
                      Text="{Binding Cost}"/>
             <Label Style="{StaticResource DefaultLabel}" 
                    Content="Классификация" FontSize="12"/>
@@ -49,6 +49,6 @@
                 VerticalAlignment="Top"
                 Margin="15 0 15 0"
                 IsDefault="True"
-                Command="{Binding AddTransaction}"/>
+                Command="{Binding Command}"/>
     </Grid>
 </Window>
