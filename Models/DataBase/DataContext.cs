@@ -23,7 +23,7 @@ namespace family_budget.Models.DataBase
                 .AddJsonFile("appsettings.json")
                 .Build();
 
-            optionsBuilder.UseSqlServer(config.GetConnectionString("HomeConnection"));
+            optionsBuilder.UseSqlServer(config.GetConnectionString("CollegeConnection"));
         }
     }
 }
