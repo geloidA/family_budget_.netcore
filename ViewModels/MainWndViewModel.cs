@@ -64,7 +64,7 @@ namespace family_budget.ViewModels
 
         private void AddExpense(object sender, NotifyCollectionChangedEventArgs e)
         {
-            
+            //TODO: Сделать добавление в коллекции этой vm
             var isExisted = AddTransactionIn(newExpense, AmountsGroupedExpenses);
 
             if (!isExisted)
