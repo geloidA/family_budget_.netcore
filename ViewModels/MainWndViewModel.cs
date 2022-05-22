@@ -7,6 +7,7 @@ using LiveCharts.Wpf;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.Linq;
 using System.Windows;
 using System.Windows.Input;
@@ -22,8 +23,8 @@ namespace family_budget.ViewModels
         public ObservableCollection<Transaction> LastTransactions
             => new ObservableCollection<Transaction>(DataWorker.Transactions.Take(10));
 
-        private readonly Dictionary<string, ObservableValue> AmountsGroupedExpenses;
-        private readonly Dictionary<string, ObservableValue> AmountsGroupedIncomes;
+        private Dictionary<string, ObservableValue> AmountsGroupedExpenses;
+        private Dictionary<string, ObservableValue> AmountsGroupedIncomes;
 
         public MainWndViewModel()
         {
@@ -52,10 +53,18 @@ namespace family_budget.ViewModels
                     Values = new ChartValues<ObservableValue> { pair.Value }
                 };
             }));
+            DataWorker.Expenses.CollectionChanged += Expenses_CollectionChanged;
         }
 
-        public void AddExpense(Expense newExpense)
+        private void Expenses_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
+            if (e.Action == NotifyCollectionChangedAction.Add)
+                AddExpense(sender, e);
+        }
+
+        private void AddExpense(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            //TODO: Сделать добавление в коллекции этой vm
             var isExisted = AddTransactionIn(newExpense, AmountsGroupedExpenses);
 
             if (!isExisted)
