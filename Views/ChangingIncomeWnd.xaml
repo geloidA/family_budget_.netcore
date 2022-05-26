@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:family_budget.Views"
         xmlns:vm="clr-namespace:family_budget.ViewModels"
         mc:Ignorable="d"
-        Title="ChangingIncomeWnd" Height="450" Width="300">
+        Title="Изменение дохода" Height="450" Width="300">
     <Window.DataContext>
         <vm:ChangingIncomeWndViewModel/>
     </Window.DataContext>
@@ -43,7 +43,7 @@
         </StackPanel>
 
 
-        <Button Content="Добавить" 
+        <Button Content="Изменить" 
                 FontFamily="Inter"
                 Grid.Row="1"
                 VerticalAlignment="Top"
