@@ -6,6 +6,7 @@
         xmlns:local="clr-namespace:family_budget.Views"
         xmlns:vm="clr-namespace:family_budget.ViewModels"
         mc:Ignorable="d"
+        ResizeMode="NoResize"
         Title="Добавление дохода" Height="450" Width="300">
     <Window.DataContext>
         <vm:AddingIncomesWndViewModel/>
@@ -28,7 +29,6 @@
             <Label Style="{StaticResource DefaultLabel}" 
                    Content="Стоимость" FontSize="12"/>
             <TextBox Margin="0 5 0 5"
-                     PreviewTextInput="{Binding textBoxesInput.OnlyNumericTextPasting}"
                      Text="{Binding Cost}"/>
             <Label Style="{StaticResource DefaultLabel}" 
                    Content="Классификация" FontSize="12"/>

@@ -1,4 +1,5 @@
-﻿using System.Collections.ObjectModel;
+﻿using System;
+using System.Collections.ObjectModel;
 using System.Linq;
 
 namespace family_budget.Models.DataBase
@@ -20,6 +21,15 @@ namespace family_budget.Models.DataBase
         public static ObservableCollection<Income> Incomes;
         public static ObservableCollection<FamilyMember> FamilyMembers;
         public static ObservableCollection<User> Users;
+
+        /// <summary>
+        /// first argument - value that will be updated, second - data from which info is given 
+        /// </summary>
+        public static event Action<Expense, Expense> ExpenseUpdated;
+        /// <summary>
+        /// first argument - value that will be updated, second - data from which info is given 
+        /// </summary>
+        public static event Action<Income, Income> IncomeUpdated;
 
         public static bool TryFindUser(string login, string password, out User user)
         {
@@ -115,6 +125,8 @@ namespace family_budget.Models.DataBase
             {
                 var toUpdate = context.Incomes.SingleOrDefault(e => e.Id == toUpdateId);
 
+                IncomeUpdated?.Invoke(toUpdate, from);
+
                 UpdateTransaction(toUpdate, from);
                 context.SaveChanges();
             }
@@ -124,6 +136,8 @@ namespace family_budget.Models.DataBase
             using (var context = new DataContext())
             {
                 var toUpdate = context.Expenses.SingleOrDefault(e => e.Id == toUpdateId);
+
+                ExpenseUpdated?.Invoke(toUpdate, from);
 
                 UpdateTransaction(toUpdate, from);
                 context.SaveChanges();

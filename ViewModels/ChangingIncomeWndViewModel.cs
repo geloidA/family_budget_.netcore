@@ -10,14 +10,6 @@ namespace family_budget.ViewModels
 {
     internal class ChangingIncomeWndViewModel : ChangingTransactionViewModel
     {
-        public ChangingIncomeWndViewModel()
-        {
-            Cost = ToChange.Cost;
-            Date = ToChange.Date;
-            Description = ToChange.Description;
-            SelectedFamilyMember = DataWorker.FamilyMembers.FirstOrDefault(m => m.Id == ToChange.FamilyMemberId);
-            Classification = ToChange.Classification;
-        }
         public override ICommand Command =>
             new DelegateCommand(() =>
             {
@@ -35,7 +27,6 @@ namespace family_budget.ViewModels
                 };
 
                 DataWorker.UpdateIncome(income.Id, updated);
-                //TODO
             });
     }
 }
