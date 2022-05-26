@@ -101,8 +101,9 @@
                         <Label Content="Траты за месяц:" Style="{StaticResource DefaultLabel}"
                                VerticalAlignment="Top"
                                HorizontalAlignment="Left"/>
-                        <Label Content="{Binding MonthExpensesSum, StringFormat={}{0}руб.}"
-                               Style="{StaticResource DefaultLabel}" />
+                        <Label>
+                            <TextBlock Text="{Binding MonthExpensesSum, StringFormat={}{0} руб.}" Style="{StaticResource DefaultTextBlock}"/>
+                        </Label>
                     </UniformGrid>
 
                     <Canvas Grid.Row="1" Background="Beige"/>

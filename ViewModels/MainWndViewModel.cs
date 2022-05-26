@@ -75,12 +75,16 @@ namespace family_budget.ViewModels
             switch (e.Action)
             {
                 case NotifyCollectionChangedAction.Add:
-                    AddTransaction(e.NewItems.Cast<Expense>().FirstOrDefault(), AmountsGroupedExpenses,
-                        Expenses);
+                    var newExpense = e.NewItems.Cast<Expense>().FirstOrDefault();
+                    AddTransaction(newExpense, AmountsGroupedExpenses,
+                            Expenses);
+                    AddToMonthExpenses(newExpense);
                     break;
                 case NotifyCollectionChangedAction.Remove:
-                    RemoveTransaction(e.OldItems.Cast<Expense>().FirstOrDefault(), AmountsGroupedExpenses,
+                    var oldExpense = e.OldItems.Cast<Expense>().FirstOrDefault();
+                    RemoveTransaction(oldExpense, AmountsGroupedExpenses,
                         Expenses);
+                    RemoveFromMonthExpenses(oldExpense);
                     break;
             }
         }
@@ -162,13 +166,36 @@ namespace family_budget.ViewModels
             if (first == null)
                 return;
             else if (toUpdate.Date.Month == first.Date.Month && toUpdate.Date.Year == first.Date.Year)
-                UpdateMonthTransactions(toUpdate, from);
+                UpdateMonthExpenses(toUpdate, from);
         }
 
-        private void UpdateMonthTransactions(Expense toUpdate, Expense from)
+        private void UpdateMonthExpenses(Expense toUpdate, Expense from)
         {
             if (from.Date.Month != toUpdate.Date.Month)
                 MonthExpenses.Remove(toUpdate);
+            else
+            {
+                var toChange = MonthExpenses.SingleOrDefault(e => e.Id == toUpdate.Id);
+                MonthExpensesSum += from.Cost - toUpdate.Cost;
+                if(toChange != null)
+                {
+                    toChange.Date = from.Date;
+                    toChange.Classification = from.Classification;
+                    toChange.Cost = from.Cost;
+                    toChange.Description = from.Description;
+                    toChange.FamilyMemberId = from.FamilyMemberId;
+                }                
+            }
+        }
+        private void AddToMonthExpenses(Expense newExpense)
+        {
+            MonthExpenses.Add(newExpense);
+            MonthExpensesSum += newExpense.Cost;
+        }
+        private void RemoveFromMonthExpenses(Expense oldExpense)
+        {
+            MonthExpenses.Remove(oldExpense);
+            MonthExpensesSum -= oldExpense.Cost;
         }
 
         private void DataWorker_IncomeUpdated(Income toUpdate, Income from)
@@ -226,7 +253,11 @@ namespace family_budget.ViewModels
                 }, () => User != null);
             }
         }
-        public ICommand LogOut => new DelegateCommand(() => User = null);
+        public ICommand LogOut => new DelegateCommand(() =>
+        {
+            User = null;
+            (Application.Current as App).MainWindowViewModel.StatusBar = "Чтобы работать с системой, нужно авторизоваться";
+        });
 
         private void OpenTransactionOverviewPresentation(TransactionOverviewModel transactionOverviewModel)
         {

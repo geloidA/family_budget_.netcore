@@ -25,6 +25,7 @@ namespace family_budget.ViewModels
                     {
                         var app = Application.Current as App;
                         app.MainWindowViewModel.User = user;
+                        app.MainWindowViewModel.StatusBar = "Готово";
                         app.DisplayRootRegistry.HidePresentation(this);
                     }
                     else StatusBar = "Неверный логин или пароль";
