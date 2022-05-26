@@ -2,7 +2,6 @@
 using family_budget.Models;
 using family_budget.Models.DataBase;
 using family_budget.ViewModels.Abstract;
-using System.Linq;
 using System.Windows.Input;
 
 namespace family_budget.ViewModels
@@ -24,7 +23,6 @@ namespace family_budget.ViewModels
                 };
 
                 DataWorker.UpdateExpense(expense.Id, updated);
-                //TODO
             });
     }
 }

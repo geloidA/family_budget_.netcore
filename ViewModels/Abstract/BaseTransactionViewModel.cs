@@ -11,8 +11,6 @@ namespace family_budget.ViewModels.Abstract
 {
     internal abstract class BaseTransactionViewModel : ViewModelBase
     {
-        private protected MainWndViewModel mainWndViewModel;
-
         public TextBoxesInput textBoxesInput = new TextBoxesInput();
         public ObservableCollection<FamilyMember> FamilyMembers { get; set; }
         public FamilyMember SelectedFamilyMember { get; set; }
@@ -23,9 +21,7 @@ namespace family_budget.ViewModels.Abstract
 
         public BaseTransactionViewModel()
         {
-            //TODO: DataWorker
-            mainWndViewModel = (Application.Current as App).MainWindowViewModel;
-            FamilyMembers = new ObservableCollection<FamilyMember>(DataWorker.FamilyMembers);
+            FamilyMembers = DataWorker.FamilyMembers;
         }
 
         public virtual ICommand Command { get; }

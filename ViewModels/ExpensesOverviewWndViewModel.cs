@@ -14,9 +14,21 @@ namespace family_budget.ViewModels
         public ExpensesOverviewWndViewModel()
         {
             //TODO: Inizialization
-            Transactions = new ObservableCollection<TransactionJoinFM>(DataWorker.ExpensesJoinFamilyMembers);
+            Transactions = new ObservableCollection<TransactionJoinFM>(DataWorker.Expenses.Join(
+                        DataWorker.FamilyMembers,
+                        e => e.FamilyMemberId,
+                        f => f.Id,
+                        (e, f) => new TransactionJoinFM
+                        {
+                            TransactionId = e.Id,
+                            Classification = e.Classification,
+                            Cost = e.Cost,
+                            Date = e.Date,
+                            Description = e.Description,
+                            FamilyRole = f.FamilyRole
+                        }));
         }
-
+        
         public override ICommand OpenAddingTransactionPresentation
         {
             get
@@ -25,7 +37,8 @@ namespace family_budget.ViewModels
                 {
                     var rootRegistry = (Application.Current as App).DisplayRootRegistry;
                     await rootRegistry.ShowModalPresentation(new AddingExpensesWndViewModel());
-                });
+                }, 
+                () => mainVM.User.Role == "admin");
             }
         }
 
@@ -40,7 +53,7 @@ namespace family_budget.ViewModels
                     var toRemove = DataWorker.Expenses.FirstOrDefault(e => e.Id == selected.TransactionId);
                     DataWorker.RemoveExpense(toRemove);
                 },
-                () => SelectedTransactionJoinFM != null);
+                () => mainVM.User.Role == "admin" && SelectedTransactionJoinFM != null);
             }
         }
 
@@ -57,10 +70,10 @@ namespace family_budget.ViewModels
                     Date = selectedExpense.Date,
                     Description = selectedExpense.Description,
                     Classification = selectedExpense.Classification,
-                    //TODO:
                     SelectedFamilyMember = DataWorker.FamilyMembers.FirstOrDefault(m => m.Id == selectedExpense.FamilyMemberId),
-                    FamilyMembers = new ObservableCollection<FamilyMember>(DataWorker.FamilyMembers)
+                    FamilyMembers = DataWorker.FamilyMembers
                 });
-            });
+            }, 
+            () => mainVM.User.Role == "admin" && SelectedTransactionJoinFM != null);
     }
 }
