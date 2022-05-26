@@ -27,6 +27,11 @@ namespace family_budget.ViewModels
                             Description = e.Description,
                             FamilyRole = f.FamilyRole
                         }));
+
+            AverageTransactCostByMonth = Transactions.GroupBy(m => (Months)m.Date.Month)
+                .Select(month => (month.Key, month.Sum(t => t.Cost)))
+                .Sum(m => m.Item2) / 12;
+
             DataWorker.Expenses.CollectionChanged += Expenses_CollectionChanged;
             DataWorker.ExpenseUpdated += (toUpdate, from) => TransactionUpdated(toUpdate, from);
         }

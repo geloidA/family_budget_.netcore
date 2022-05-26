@@ -6,6 +6,7 @@
         xmlns:local="clr-namespace:family_budget.Views"
         xmlns:vm="clr-namespace:family_budget.ViewModels"
         mc:Ignorable="d"
+        WindowStartupLocation="CenterScreen"
         Title="AuthorizationWnd" Height="450" Width="400">
     <Window.DataContext>
         <vm:AuthorizetionViewModel/>

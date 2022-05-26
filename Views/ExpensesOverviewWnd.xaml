@@ -8,7 +8,8 @@
         xmlns:vm="clr-namespace:family_budget.ViewModels"
         xmlns:sc="clr-namespace:family_budget.Services"
         xmlns:lvc="clr-namespace:LiveCharts.Wpf;assembly=LiveCharts.Wpf"
-        Title="ExpensesOverviewWnd" Height="450" Width="800">
+        Title="Расходы" Height="450" Width="800"
+        WindowStartupLocation="CenterScreen">
     <Window.Resources>
         <sc:DateTimeToDateConverter x:Key="dateConverter"/>
     </Window.Resources>

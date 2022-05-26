@@ -6,6 +6,7 @@
         xmlns:local="clr-namespace:family_budget.Views"
         xmlns:vm="clr-namespace:family_budget.ViewModels"
         mc:Ignorable="d"
+        WindowStartupLocation="CenterScreen"
         Title="RegistrationWnd" Height="300" Width="400">
     <Window.DataContext>
         <vm:RegistrationWndViewModel/>

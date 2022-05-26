@@ -11,12 +11,14 @@ namespace family_budget.ViewModels.Abstract
     internal abstract class TransactionOverviewModel : ViewModelBase
     {
         private protected MainWndViewModel mainVM;
+        public ObservableCollection<TransactionJoinFM> Transactions { get; set; }
+        public TransactionJoinFM SelectedTransactionJoinFM { get; set; }
+        public double AverageTransactCostByMonth { get; set; }
+
         public TransactionOverviewModel()
         {
             mainVM = (Application.Current as App).MainWindowViewModel;
         }
-        public ObservableCollection<TransactionJoinFM> Transactions { get; set; }
-        public TransactionJoinFM SelectedTransactionJoinFM { get; set; }
 
         private protected void TransactionUpdated(Transaction toUpdate, Transaction from)
         {

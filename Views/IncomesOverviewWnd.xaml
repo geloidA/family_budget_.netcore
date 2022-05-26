@@ -5,6 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:family_budget.Views"
         mc:Ignorable="d"
+        WindowStartupLocation="CenterScreen"
         xmlns:vm="clr-namespace:family_budget.ViewModels"
         xmlns:sc="clr-namespace:family_budget.Services"
         xmlns:lvc="clr-namespace:LiveCharts.Wpf;assembly=LiveCharts.Wpf"

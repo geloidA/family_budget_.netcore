@@ -61,7 +61,6 @@ namespace family_budget.Services
             if (openWindows.ContainsKey(vm))
                 throw new InvalidOperationException("UI for this VM is already displayed");
             var window = CreateWindowInstanceWithVM(vm);
-            window.WindowStartupLocation = WindowStartupLocation.CenterScreen;
             window.Show();
             window.Closing += (o, e) => openWindows.Remove(vm);
             openWindows[vm] = window;
@@ -78,7 +77,6 @@ namespace family_budget.Services
         public async Task ShowModalPresentation(object vm)
         {
             var window = CreateWindowInstanceWithVM(vm);
-            window.WindowStartupLocation = WindowStartupLocation.CenterOwner;
             await window.Dispatcher.InvokeAsync(() => window.ShowDialog());
         }
     }

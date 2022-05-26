@@ -28,6 +28,11 @@ namespace family_budget.ViewModels
                             Description = i.Description,
                             FamilyRole = f.FamilyRole
                         }));
+
+            AverageTransactCostByMonth = Transactions.GroupBy(m => (Months)m.Date.Month)
+                .Select(month => (month.Key, month.Sum(t => t.Cost)))
+                .Sum(m => m.Item2) / 12;
+
             DataWorker.IncomeUpdated += (toUpdate, from) => TransactionUpdated(toUpdate, from);
             DataWorker.Incomes.CollectionChanged += Incomes_CollectionChanged;
         }
@@ -49,12 +54,16 @@ namespace family_budget.ViewModels
                             FamilyRole = DataWorker.FamilyMembers.FirstOrDefault(f => f.Id == newIncome.FamilyMemberId)?.FamilyRole,
                             TransactionId = newIncome.Id
                         });
+                        AverageTransactCostByMonth += newIncome.Cost / 12;
                     }
                     break;
                 case NotifyCollectionChangedAction.Remove:
                     var oldIncome = e.OldItems.Cast<Income>().FirstOrDefault();
                     if(oldIncome != null)
+                    {
                         Transactions.Remove(Transactions.FirstOrDefault(t => t.TransactionId == oldIncome.Id));
+                        AverageTransactCostByMonth -= oldIncome.Cost / 12;
+                    }
                     break;
             }
         }
