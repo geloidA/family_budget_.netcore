@@ -253,12 +253,6 @@ namespace family_budget.ViewModels
                 }, () => User != null);
             }
         }
-        public ICommand LogOut => new DelegateCommand(() =>
-        {
-            User = null;
-            (Application.Current as App).MainWindowViewModel.StatusBar = "Чтобы работать с системой, нужно авторизоваться";
-        });
-
         private void OpenTransactionOverviewPresentation(TransactionOverviewModel transactionOverviewModel)
         {
             var rootRegistry = (Application.Current as App).DisplayRootRegistry;
@@ -269,5 +263,10 @@ namespace family_budget.ViewModels
             }
             else StatusBar = "Окно уже открыто";
         }
+        public ICommand LogOut => new DelegateCommand(() =>
+        {
+            User = null;
+            (Application.Current as App).MainWindowViewModel.StatusBar = "Чтобы работать с системой, нужно авторизоваться";
+        });
     }
 }

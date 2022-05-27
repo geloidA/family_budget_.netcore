@@ -2,6 +2,9 @@
 using family_budget.Models;
 using family_budget.Models.DataBase;
 using family_budget.ViewModels.Abstract;
+using LiveCharts;
+using LiveCharts.Wpf;
+using System;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Linq;
@@ -12,6 +15,7 @@ namespace family_budget.ViewModels
 {
     internal class ExpensesOverviewWndViewModel : TransactionOverviewModel
     {
+
         public ExpensesOverviewWndViewModel()
         {
             Transactions = new ObservableCollection<TransactionJoinFM>(DataWorker.Expenses.Join(
@@ -28,9 +32,20 @@ namespace family_budget.ViewModels
                             FamilyRole = f.FamilyRole
                         }));
 
-            AverageTransactCostByMonth = Transactions.GroupBy(m => (Months)m.Date.Month)
+            AverageTransactCostByMonth = Transactions.GroupBy(m => m.Date.Month)
                 .Select(month => (month.Key, month.Sum(t => t.Cost)))
                 .Sum(m => m.Item2) / 12;
+
+            //TODO: сделать столбчатую диаграмму
+            MonthsSeries = new SeriesCollection
+            {
+                new LineSeries { Title = "Average", Values = new ChartValues<double> { AverageTransactCostByMonth, 1, 2 }},
+                new LineSeries 
+                {
+                    Title = Enum.GetName(typeof(Month), SecondSelectedMonth),
+                    Values = new ChartValues<double> { SumOfTransactionsPerMonth(FirstSelectedMonth) }
+                }
+            };
 
             DataWorker.Expenses.CollectionChanged += Expenses_CollectionChanged;
             DataWorker.ExpenseUpdated += (toUpdate, from) => TransactionUpdated(toUpdate, from);

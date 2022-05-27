@@ -29,7 +29,7 @@ namespace family_budget.ViewModels
                             FamilyRole = f.FamilyRole
                         }));
 
-            AverageTransactCostByMonth = Transactions.GroupBy(m => (Months)m.Date.Month)
+            AverageTransactCostByMonth = Transactions.GroupBy(m => (Month)m.Date.Month)
                 .Select(month => (month.Key, month.Sum(t => t.Cost)))
                 .Sum(m => m.Item2) / 12;
 
@@ -85,7 +85,6 @@ namespace family_budget.ViewModels
                     FamilyMembers = DataWorker.FamilyMembers
                 });
             }, () => mainVM.User?.Role == "admin" && SelectedTransactionJoinFM != null);
-
         public override ICommand DeleteTransaction =>
             new DelegateCommand(() =>
             {
@@ -94,7 +93,6 @@ namespace family_budget.ViewModels
                 var toRemove = DataWorker.Incomes.FirstOrDefault(e => e.Id == selected.TransactionId);
                 DataWorker.RemoveIncome(toRemove);
             }, () => mainVM.User?.Role == "admin" && SelectedTransactionJoinFM != null);
-
         public override ICommand OpenAddingTransactionPresentation =>
             new DelegateCommand(async () =>
             {

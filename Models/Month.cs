@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace family_budget.Models
 {
-    enum Months
+    enum Month
     {
         Jan = 1,
         Feb,
@@ -19,6 +19,7 @@ namespace family_budget.Models
         Sep,
         Oct,
         Nov,
-        Dec
+        Dec,
+        Average
     }
 }
