@@ -8,7 +8,9 @@
         xmlns:sc="clr-namespace:family_budget.Services"
         xmlns:lvc="clr-namespace:LiveCharts.Wpf;assembly=LiveCharts.Wpf"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800" WindowStartupLocation="CenterScreen">
+        Title="MainWindow" 
+        Height="450" Width="800"
+        WindowStartupLocation="CenterScreen">
     <Window.Resources>
         <sc:DateTimeToDateConverter x:Key="dateConverter"/>
     </Window.Resources>
@@ -101,8 +103,9 @@
                         <Label Content="Траты за месяц:" Style="{StaticResource DefaultLabel}"
                                VerticalAlignment="Top"
                                HorizontalAlignment="Left"/>
-                        <Label Content="{Binding MonthExpensesSum, StringFormat={}{0}руб.}"
-                               Style="{StaticResource DefaultLabel}" />
+                        <Label>
+                            <TextBlock Text="{Binding MonthExpensesSum, StringFormat={}{0} руб.}" Style="{StaticResource DefaultTextBlock}"/>
+                        </Label>
                     </UniformGrid>
 
                     <Canvas Grid.Row="1" Background="Beige"/>

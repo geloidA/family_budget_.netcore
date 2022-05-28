@@ -28,22 +28,15 @@ namespace family_budget.ViewModels
                             Description = i.Description,
                             FamilyRole = f.FamilyRole
                         }));
-            DataWorker.IncomeUpdated += DataWorker_IncomeUpdated;
+
+            AverageTransactCostByMonth = Transactions.GroupBy(m => (Month)m.Date.Month)
+                .Select(month => (month.Key, month.Sum(t => t.Cost)))
+                .Sum(m => m.Item2) / 12;
+
+            DataWorker.IncomeUpdated += (toUpdate, from) => TransactionUpdated(toUpdate, from);
             DataWorker.Incomes.CollectionChanged += Incomes_CollectionChanged;
         }
 
-        private void DataWorker_IncomeUpdated(Income toUpdate, Income from)
-        {
-            var toChange = Transactions.FirstOrDefault(t => t.TransactionId == toUpdate.Id);
-            if(toChange != null)
-            {
-                toChange.Classification = from.Classification;
-                toChange.Cost = from.Cost;
-                toChange.Date = from.Date;
-                toChange.Description = from.Description;
-                toChange.FamilyRole = DataWorker.FamilyMembers.FirstOrDefault(f => f.Id == from.FamilyMemberId)?.FamilyRole;
-            }
-        }
         private void Incomes_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
             switch (e.Action)
@@ -61,12 +54,16 @@ namespace family_budget.ViewModels
                             FamilyRole = DataWorker.FamilyMembers.FirstOrDefault(f => f.Id == newIncome.FamilyMemberId)?.FamilyRole,
                             TransactionId = newIncome.Id
                         });
+                        AverageTransactCostByMonth += newIncome.Cost / 12;
                     }
                     break;
                 case NotifyCollectionChangedAction.Remove:
                     var oldIncome = e.OldItems.Cast<Income>().FirstOrDefault();
                     if(oldIncome != null)
+                    {
                         Transactions.Remove(Transactions.FirstOrDefault(t => t.TransactionId == oldIncome.Id));
+                        AverageTransactCostByMonth -= oldIncome.Cost / 12;
+                    }
                     break;
             }
         }
@@ -87,8 +84,7 @@ namespace family_budget.ViewModels
                     SelectedFamilyMember = DataWorker.FamilyMembers.FirstOrDefault(m => m.Id == selectedIncome.FamilyMemberId),
                     FamilyMembers = DataWorker.FamilyMembers
                 });
-            }, () => mainVM.User.Role == "admin" && SelectedTransactionJoinFM != null);
-
+            }, () => mainVM.User?.Role == "admin" && SelectedTransactionJoinFM != null);
         public override ICommand DeleteTransaction =>
             new DelegateCommand(() =>
             {
@@ -96,13 +92,12 @@ namespace family_budget.ViewModels
                 Transactions.Remove(selected);
                 var toRemove = DataWorker.Incomes.FirstOrDefault(e => e.Id == selected.TransactionId);
                 DataWorker.RemoveIncome(toRemove);
-            }, () => mainVM.User.Role == "admin" && SelectedTransactionJoinFM != null);
-
+            }, () => mainVM.User?.Role == "admin" && SelectedTransactionJoinFM != null);
         public override ICommand OpenAddingTransactionPresentation =>
             new DelegateCommand(async () =>
             {
                 var rootRegistry = (Application.Current as App).DisplayRootRegistry;
                 await rootRegistry.ShowModalPresentation(new AddingIncomesWndViewModel());
-            },() => mainVM.User.Role == "admin");
+            },() => mainVM.User?.Role == "admin");
     }
 }

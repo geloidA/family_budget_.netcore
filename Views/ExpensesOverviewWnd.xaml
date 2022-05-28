@@ -3,12 +3,14 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
         xmlns:local="clr-namespace:family_budget.Views"
         mc:Ignorable="d"
         xmlns:vm="clr-namespace:family_budget.ViewModels"
         xmlns:sc="clr-namespace:family_budget.Services"
         xmlns:lvc="clr-namespace:LiveCharts.Wpf;assembly=LiveCharts.Wpf"
-        Title="ExpensesOverviewWnd" Height="450" Width="800">
+        Title="Расходы" Height="450" Width="800"
+        WindowStartupLocation="CenterScreen">
     <Window.Resources>
         <sc:DateTimeToDateConverter x:Key="dateConverter"/>
     </Window.Resources>
@@ -21,9 +23,44 @@
             <ColumnDefinition/>
         </Grid.ColumnDefinitions>
 
-        <lvc:CartesianChart>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="0.06*"/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
 
-        </lvc:CartesianChart>
+            <StackPanel Orientation="Horizontal">
+                
+                <Label Style="{StaticResource DefaultLabel}"
+                       FontSize="12"
+                       Content="Месяц:"/>
+                <ComboBox ItemsSource="{Binding Months}"
+                          SelectedItem="{Binding FirstSelectedMonth}">
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="SelectionChanged">
+                            <i:InvokeCommandAction Command="{Binding FirstMonthSelectionChanged}"/>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
+                </ComboBox>
+                
+                <Label Style="{StaticResource DefaultLabel}"
+                       FontSize="12"
+                       Content="Месяц:"/>
+                <ComboBox ItemsSource="{Binding Months}"
+                          SelectedItem="{Binding SecondSelectedMonth}">
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="SelectionChanged">
+                            <i:InvokeCommandAction Command="{Binding SecondMonthSelectionChanged}"/>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
+                </ComboBox>
+            </StackPanel>
+            
+            <lvc:CartesianChart Grid.Row="1" Series="{Binding MonthsSeries}">
+                
+            </lvc:CartesianChart>
+
+        </Grid>
         
         <Grid Grid.Column="1">
             <Grid.RowDefinitions>
