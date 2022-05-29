@@ -1,13 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.Data;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Windows;
+﻿using family_budget.Services;
 using family_budget.ViewModels;
 using family_budget.Views;
-using family_budget.Services;
+using System.Windows;
 
 namespace family_budget
 {
@@ -16,7 +10,7 @@ namespace family_budget
     /// </summary>
     public partial class App : Application
     {
-        public DisplayRootRegistry DisplayRootRegistry = new DisplayRootRegistry();
+        public DisplayRootRegistry DisplayRootRegistry = new();
         public readonly MainWndViewModel MainWindowViewModel;
 
         public App()
@@ -29,6 +23,7 @@ namespace family_budget
             DisplayRootRegistry.RegisterWindowType<ChangingExpenseWndViewModel, ChangingExpenseWnd>();
             DisplayRootRegistry.RegisterWindowType<ChangingIncomeWndViewModel, ChangingIncomeWnd>();
             DisplayRootRegistry.RegisterWindowType<AuthorizetionViewModel, AuthorizationWnd>();
+            DisplayRootRegistry.RegisterWindowType<AddingFamilyMemberViewModel, AddingFamilyMemberWnd>();
             DisplayRootRegistry.RegisterWindowType<RegistrationWndViewModel, RegistrationWnd>();
             MainWindowViewModel = new MainWndViewModel();
         }

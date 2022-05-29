@@ -2,6 +2,9 @@
 using family_budget.Models;
 using family_budget.Models.DataBase;
 using family_budget.ViewModels.Abstract;
+using LiveCharts;
+using LiveCharts.Defaults;
+using LiveCharts.Wpf;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
@@ -33,6 +36,14 @@ namespace family_budget.ViewModels
                 .Select(month => (month.Key, month.Sum(t => t.Cost)))
                 .Sum(m => m.Item2) / 12;
 
+            FirstTransactCostByMonth.Value = AverageTransactCostByMonth;
+            SecondTransactCostByMonth.Value = SumOfTransactionsPerMonth(SecondSelectedMonth);
+
+            MonthsSeries = new SeriesCollection
+            {
+                new ColumnSeries { Title = "руб.", Values = new ChartValues<ObservableValue> { FirstTransactCostByMonth, SecondTransactCostByMonth } }
+            };
+
             DataWorker.IncomeUpdated += (toUpdate, from) => TransactionUpdated(toUpdate, from);
             DataWorker.Incomes.CollectionChanged += Incomes_CollectionChanged;
         }
@@ -43,29 +54,16 @@ namespace family_budget.ViewModels
             {
                 case NotifyCollectionChangedAction.Add:
                     var newIncome = e.NewItems.Cast<Income>().FirstOrDefault();
-                    if(newIncome != null)
-                    {
-                        Transactions.Add(new TransactionJoinFM
-                        {
-                            Classification = newIncome.Classification,
-                            Cost = newIncome.Cost,
-                            Date = newIncome.Date,
-                            Description = newIncome.Description,
-                            FamilyRole = DataWorker.FamilyMembers.FirstOrDefault(f => f.Id == newIncome.FamilyMemberId)?.FamilyRole,
-                            TransactionId = newIncome.Id
-                        });
-                        AverageTransactCostByMonth += newIncome.Cost / 12;
-                    }
+                    AddTransaction(newIncome);
+                    AverageTransactCostByMonth += newIncome.Cost / 12;
                     break;
                 case NotifyCollectionChangedAction.Remove:
                     var oldIncome = e.OldItems.Cast<Income>().FirstOrDefault();
-                    if(oldIncome != null)
-                    {
-                        Transactions.Remove(Transactions.FirstOrDefault(t => t.TransactionId == oldIncome.Id));
-                        AverageTransactCostByMonth -= oldIncome.Cost / 12;
-                    }
+                    RemoveTransaction(oldIncome);
+                    AverageTransactCostByMonth -= oldIncome.Cost / 12;
                     break;
             }
+            UpdateMonthSeries();
         }
 
         public override ICommand ChangeTransaction => 

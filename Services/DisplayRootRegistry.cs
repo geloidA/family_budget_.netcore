@@ -9,7 +9,7 @@ namespace family_budget.Services
 {
     public class DisplayRootRegistry
     {
-        Dictionary<Type, Type> vmToWindowMapping = new Dictionary<Type, Type>();
+        readonly Dictionary<Type, Type> vmToWindowMapping = new();
 
         public void RegisterWindowType<VM, Win>() where Win : Window, new() where VM : class
         {
@@ -36,7 +36,7 @@ namespace family_budget.Services
         public Window CreateWindowInstanceWithVM(object vm)
         {
             if (vm == null)
-                throw new ArgumentNullException("vm");
+                throw new ArgumentNullException(nameof(vm));
             Type windowType = null;
 
             var vmType = vm.GetType();
@@ -53,11 +53,12 @@ namespace family_budget.Services
         }
 
         public IEnumerable<object> ViewModels => openWindows.Keys;
-        Dictionary<object, Window> openWindows = new Dictionary<object, Window>();
+
+        readonly Dictionary<object, Window> openWindows = new();
         public void ShowPresentation(object vm)
         {
             if (vm == null)
-                throw new ArgumentNullException("vm");
+                throw new ArgumentNullException(nameof(vm));
             if (openWindows.ContainsKey(vm))
                 throw new InvalidOperationException("UI for this VM is already displayed");
             var window = CreateWindowInstanceWithVM(vm);
@@ -68,8 +69,7 @@ namespace family_budget.Services
 
         public void HidePresentation(object vm)
         {
-            Window window;
-            if (!openWindows.TryGetValue(vm, out window))
+            if (!openWindows.TryGetValue(vm, out Window window))
                 throw new InvalidOperationException("UI for this VM is not displayed");
             window.Close();
         }
