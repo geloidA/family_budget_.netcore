@@ -22,6 +22,8 @@ namespace family_budget.ViewModels
         public SeriesCollection Expenses { get; set; }
         public SeriesCollection Incomes { get; set; }
 
+        public ObservableCollection<MemberCosts> FamilyMembers { get; set; }            
+        public MemberCosts SelectedFamilyMember { get; set; }
         public ObservableCollection<Expense> MonthExpenses { get; set; }
         public double MonthExpensesSum { get; set; }
 
@@ -31,12 +33,13 @@ namespace family_budget.ViewModels
         public MainWndViewModel()
         {
             Initialize();
+            FamilyMembers = new ObservableCollection<MemberCosts>(FamilyMembersCosts);
             DataWorker.Expenses.CollectionChanged += Expenses_CollectionChanged;
             DataWorker.Incomes.CollectionChanged += Incomes_CollectionChanged;
             DataWorker.ExpenseUpdated += DataWorker_ExpenseUpdated;
             DataWorker.IncomeUpdated += DataWorker_IncomeUpdated;
+            DataWorker.FamilyMembers.CollectionChanged += FamilyMembers_CollectionChanged;
         }
-
         private void Initialize()
         {
             AmountsGroupedExpenses = new Dictionary<string, ObservableValue>(DataWorker.Expenses.GroupBy(e => e.Classification)
@@ -70,6 +73,27 @@ namespace family_budget.ViewModels
                 .OrderByDescending(e => e.Date));
             MonthExpensesSum = MonthExpenses.Sum(e => e.Cost);
         }
+        private IEnumerable<MemberCosts> FamilyMembersCosts
+        {
+            get
+            {
+                var incomes = DataWorker.Incomes.GroupBy(income => income.FamilyMemberId);
+                var expenses = DataWorker.Expenses.GroupBy(expense => expense.FamilyMemberId);
+                foreach (var familyMember in DataWorker.FamilyMembers)
+                {
+                    var incomeCost = incomes.FirstOrDefault(i => i.Key == familyMember.Id)
+                        ?.Sum(i => i.Cost);
+                    var expenseCost = expenses.FirstOrDefault(i => i.Key == familyMember.Id)
+                        ?.Sum(e => e.Cost);
+                    yield return new MemberCosts
+                    {
+                        Member = familyMember,
+                        Incomes = incomeCost ?? 0,
+                        Expenses = expenseCost ?? 0
+                    };
+                }
+            }
+        }
         private void Expenses_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
             switch (e.Action)
@@ -79,12 +103,14 @@ namespace family_budget.ViewModels
                     AddTransaction(newExpense, AmountsGroupedExpenses,
                             Expenses);
                     AddToMonthExpenses(newExpense);
+                    FamilyMembers.FirstOrDefault(x => x.Member.Id == newExpense.FamilyMemberId).Expenses += newExpense.Cost;
                     break;
                 case NotifyCollectionChangedAction.Remove:
                     var oldExpense = e.OldItems.Cast<Expense>().FirstOrDefault();
                     RemoveTransaction(oldExpense, AmountsGroupedExpenses,
                         Expenses);
                     RemoveFromMonthExpenses(oldExpense);
+                    FamilyMembers.FirstOrDefault(x => x.Member.Id == oldExpense.FamilyMemberId).Expenses -= oldExpense.Cost;
                     break;
             }
         }
@@ -93,29 +119,17 @@ namespace family_budget.ViewModels
             switch (e.Action)
             {
                 case NotifyCollectionChangedAction.Add:
-                    AddTransaction(e.NewItems.Cast<Income>().FirstOrDefault(), AmountsGroupedIncomes,
+                    var income = e.NewItems.Cast<Income>().FirstOrDefault();
+                    AddTransaction(income, AmountsGroupedIncomes,
                         Incomes);
+                    FamilyMembers.FirstOrDefault(x => x.Member.Id == income.FamilyMemberId).Incomes += income.Cost;
                     break;
                 case NotifyCollectionChangedAction.Remove:
-                    RemoveTransaction(e.OldItems.Cast<Income>().FirstOrDefault(), AmountsGroupedIncomes,
+                    var oldIncome = e.OldItems.Cast<Income>().FirstOrDefault();
+                    RemoveTransaction(oldIncome, AmountsGroupedIncomes,
                         Incomes);
+                    FamilyMembers.FirstOrDefault(x => x.Member.Id == oldIncome.FamilyMemberId).Incomes -= oldIncome.Cost;
                     break;
-            }
-        }
-
-        private void AddTransaction(Transaction newTransact,
-            Dictionary<string, ObservableValue> model,
-            SeriesCollection series)
-        {
-            var isExisted = AddToModel(newTransact, model);
-
-            if (!isExisted)
-            {
-                series.Add(new PieSeries
-                {
-                    Title = newTransact.Classification,
-                    Values = new ChartValues<ObservableValue> { model[newTransact.Classification] }
-                });
             }
         }
         private bool AddToModel(Transaction transaction, Dictionary<string, ObservableValue> model)
@@ -131,7 +145,62 @@ namespace family_budget.ViewModels
                 return false;
             }
         }
+        private bool RemoveFromModel(Transaction transact, Dictionary<string, ObservableValue> model)
+        {
+            model[transact.Classification].Value -= transact.Cost;
+            if (model[transact.Classification].Value == 0)
+            {
+                model.Remove(transact.Classification);
+                return true;
+            }
+            return false;
+        }
+        private void FamilyMembers_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            switch (e.Action)
+            {
+                case NotifyCollectionChangedAction.Add:
+                    AddToFamilyMembers(e.NewItems.Cast<FamilyMember>().FirstOrDefault());
+                    break;
+                case NotifyCollectionChangedAction.Remove:
+                    RemoveFromFamilyMembers(e.OldItems.Cast<FamilyMember>().FirstOrDefault());
+                    break;
+            }
+        }
+        private void AddToFamilyMembers(FamilyMember member)
+        {
+            FamilyMembers.Add(new MemberCosts { Expenses = 0, Incomes = 0, Member = member });
+        }
+        private void RemoveFromFamilyMembers(FamilyMember familyMember)
+        {
+            FamilyMembers.Remove(FamilyMembers.FirstOrDefault(x => x.Member.Id == familyMember.Id));
+        }
+        private void DataWorker_ExpenseUpdated(Expense toUpdate, Expense from)
+        {
+            UpdateTransaction(toUpdate, from, AmountsGroupedExpenses, Expenses);
+            var first = MonthExpenses.FirstOrDefault();
+            if (first != null)
+            {
+                if (toUpdate.Date.Month == first.Date.Month && toUpdate.Date.Year == first.Date.Year)
+                    UpdateMonthExpenses(toUpdate, from);
+            }
+            UpdateFamilyMember(toUpdate, from, "Expenses");
+        }
 
+        private void UpdateTransaction(Transaction toUpdate, Transaction from,
+            Dictionary<string, ObservableValue> model,
+            SeriesCollection series)
+        {
+            if (toUpdate.Classification == from.Classification)
+            {
+                model[toUpdate.Classification].Value += from.Cost - toUpdate.Cost;
+            }
+            else
+            {
+                RemoveTransaction(toUpdate, model, series);
+                AddTransaction(from, model, series);
+            }
+        }
         private void RemoveTransaction(Transaction transact,
             Dictionary<string, ObservableValue> model,
             SeriesCollection series)
@@ -148,27 +217,21 @@ namespace family_budget.ViewModels
                 }
             }
         }
-        private bool RemoveFromModel(Transaction transact, Dictionary<string, ObservableValue> model)
+        private void AddTransaction(Transaction newTransact,
+            Dictionary<string, ObservableValue> model,
+            SeriesCollection series)
         {
-            model[transact.Classification].Value -= transact.Cost;
-            if (model[transact.Classification].Value == 0)
+            var isExisted = AddToModel(newTransact, model);
+
+            if (!isExisted)
             {
-                model.Remove(transact.Classification);
-                return true;
+                series.Add(new PieSeries
+                {
+                    Title = newTransact.Classification,
+                    Values = new ChartValues<ObservableValue> { model[newTransact.Classification] }
+                });
             }
-            return false;
         }
-
-        private void DataWorker_ExpenseUpdated(Expense toUpdate, Expense from)
-        {
-            UpdateTransaction(toUpdate, from, AmountsGroupedExpenses, Expenses);
-            var first = MonthExpenses.FirstOrDefault();
-            if (first == null)
-                return;
-            else if (toUpdate.Date.Month == first.Date.Month && toUpdate.Date.Year == first.Date.Year)
-                UpdateMonthExpenses(toUpdate, from);
-        }
-
         private void UpdateMonthExpenses(Expense toUpdate, Expense from)
         {
             if (from.Date.Month != toUpdate.Date.Month)
@@ -187,36 +250,50 @@ namespace family_budget.ViewModels
                 }                
             }
         }
-        private void AddToMonthExpenses(Expense newExpense)
+        private void UpdateFamilyMember(Transaction toUpdate, Transaction from, string propertyName)
         {
-            MonthExpenses.Add(newExpense);
-            MonthExpensesSum += newExpense.Cost;
-        }
-        private void RemoveFromMonthExpenses(Expense oldExpense)
-        {
-            MonthExpenses.Remove(oldExpense);
-            MonthExpensesSum -= oldExpense.Cost;
-        }
-
-        private void DataWorker_IncomeUpdated(Income toUpdate, Income from)
-        {
-            UpdateTransaction(toUpdate, from, AmountsGroupedIncomes, Incomes);
-        }
-        private void UpdateTransaction(Transaction toUpdate, Transaction from,
-            Dictionary<string, ObservableValue> model,
-            SeriesCollection series)
-        {
-            if (toUpdate.Classification == from.Classification)
+            if (toUpdate.FamilyMemberId == from.FamilyMemberId)
             {
-                model[toUpdate.Classification].Value -= toUpdate.Cost;
-                model[toUpdate.Classification].Value += from.Cost;
+                var dif = from.Cost - toUpdate.Cost;
+                if (dif != 0)
+                {
+                    var target = FamilyMembers.FirstOrDefault(x => x.Member.Id == from.FamilyMemberId);
+                    var targetCost = target.GetType().GetProperty(propertyName).GetValue(target);
+                    target.GetType().GetProperty(propertyName).SetValue(target, (double)targetCost + dif, null);
+                }
             }
             else
             {
-                RemoveTransaction(toUpdate, model, series);
-                AddTransaction(from, model, series);
+                var oldMember = FamilyMembers.FirstOrDefault(x => x.Member.Id == toUpdate.FamilyMemberId);
+                var oldMemberCost = oldMember.GetType().GetProperty(propertyName).GetValue(oldMember);
+                oldMember.GetType().GetProperty(propertyName).SetValue(oldMember, (double)oldMemberCost - toUpdate.Cost, null);
+                var newMember = FamilyMembers.FirstOrDefault(x => x.Member.Id == from.FamilyMemberId);
+                var newMemberCost = newMember.GetType().GetProperty(propertyName).GetValue(newMember);
+                newMember.GetType().GetProperty(propertyName).SetValue(newMember, (double)newMemberCost + from.Cost, null);
             }
         }
+        private void AddToMonthExpenses(Expense newExpense)
+        {
+            if (newExpense.Date.Month == DateTime.Now.Month)
+            {
+                MonthExpenses.Add(newExpense);
+                MonthExpensesSum += newExpense.Cost;
+            }
+        }
+        private void RemoveFromMonthExpenses(Expense oldExpense)
+        {
+            if (oldExpense.Date.Month == DateTime.Now.Month)
+            {
+                MonthExpenses.Remove(oldExpense);
+                MonthExpensesSum -= oldExpense.Cost;
+            }
+        }
+        private void DataWorker_IncomeUpdated(Income toUpdate, Income from)
+        {
+            UpdateTransaction(toUpdate, from, AmountsGroupedIncomes, Incomes);
+            UpdateFamilyMember(toUpdate, from, "Incomes");
+        }
+        
 
         public ICommand OpenAuthorizationPresentation
         {
@@ -224,22 +301,22 @@ namespace family_budget.ViewModels
             {
                 return new DelegateCommand(() =>
                 {
-                    var rootRegistry = (Application.Current as App).DisplayRootRegistry;
-                    if (!rootRegistry.ViewModels.Any(x => x.GetType() == typeof(AuthorizetionViewModel)))
-                    {
-                        rootRegistry.ShowPresentation(new AuthorizetionViewModel());
-                    }
-                    else StatusBar = "Окно уже открыто";
+                    OpenPresentaion(new AuthorizetionViewModel());
                 }, () => User == null);
             }
         }
+        public ICommand OpenAddFamilyMemberPresentation
+            => new DelegateCommand(() =>
+            {
+                OpenPresentaion(new AddingFamilyMemberViewModel());
+            }, () => User != null);
         public ICommand OpenExpensesOverviewPresentation
         {
             get
             {
                 return new DelegateCommand(() =>
                 {
-                    OpenTransactionOverviewPresentation(new ExpensesOverviewWndViewModel());
+                    OpenPresentaion(new ExpensesOverviewWndViewModel());
                 }, () => User != null);
             }
         }
@@ -249,16 +326,16 @@ namespace family_budget.ViewModels
             {
                 return new DelegateCommand(() =>
                 {
-                    OpenTransactionOverviewPresentation(new IncomesOverviewWndViewModel());
+                    OpenPresentaion(new IncomesOverviewWndViewModel());
                 }, () => User != null);
             }
         }
-        private void OpenTransactionOverviewPresentation(TransactionOverviewModel transactionOverviewModel)
+        private void OpenPresentaion(object viewModel)
         {
             var rootRegistry = (Application.Current as App).DisplayRootRegistry;
-            if (!rootRegistry.ViewModels.Any(x => x.GetType() == transactionOverviewModel.GetType()))
+            if (!rootRegistry.ViewModels.Any(x => x.GetType() == viewModel.GetType()))
             {
-                rootRegistry.ShowPresentation(transactionOverviewModel);
+                rootRegistry.ShowPresentation(viewModel);
                 StatusBar = "Готово";
             }
             else StatusBar = "Окно уже открыто";
@@ -268,5 +345,13 @@ namespace family_budget.ViewModels
             User = null;
             (Application.Current as App).MainWindowViewModel.StatusBar = "Чтобы работать с системой, нужно авторизоваться";
         });
+        public ICommand RemoveFamilyMember
+            => new DelegateCommand(() =>
+            {
+                var toRemove = SelectedFamilyMember.Member;
+                if (toRemove != null)
+                    DataWorker.RemoveFamilyMember(toRemove);
+            }, 
+            () => SelectedFamilyMember != null && User != null);
     }
 }

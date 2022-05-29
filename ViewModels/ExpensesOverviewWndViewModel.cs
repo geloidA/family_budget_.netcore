@@ -3,6 +3,7 @@ using family_budget.Models;
 using family_budget.Models.DataBase;
 using family_budget.ViewModels.Abstract;
 using LiveCharts;
+using LiveCharts.Defaults;
 using LiveCharts.Wpf;
 using System;
 using System.Collections.ObjectModel;
@@ -36,17 +37,13 @@ namespace family_budget.ViewModels
                 .Select(month => (month.Key, month.Sum(t => t.Cost)))
                 .Sum(m => m.Item2) / 12;
 
-            //TODO: сделать столбчатую диаграмму
+            FirstTransactCostByMonth.Value = AverageTransactCostByMonth;
+            SecondTransactCostByMonth.Value = SumOfTransactionsPerMonth(SecondSelectedMonth);
+
             MonthsSeries = new SeriesCollection
             {
-                new LineSeries { Title = "Average", Values = new ChartValues<double> { AverageTransactCostByMonth, 1, 2 }},
-                new LineSeries 
-                {
-                    Title = Enum.GetName(typeof(Month), SecondSelectedMonth),
-                    Values = new ChartValues<double> { SumOfTransactionsPerMonth(FirstSelectedMonth) }
-                }
+                new ColumnSeries { Title = "руб.", Values = new ChartValues<ObservableValue> { FirstTransactCostByMonth, SecondTransactCostByMonth } }
             };
-
             DataWorker.Expenses.CollectionChanged += Expenses_CollectionChanged;
             DataWorker.ExpenseUpdated += (toUpdate, from) => TransactionUpdated(toUpdate, from);
         }
@@ -56,35 +53,24 @@ namespace family_budget.ViewModels
             switch (e.Action)
             {
                 case NotifyCollectionChangedAction.Add:
-                    var newExpense = e.NewItems.Cast<Expense>().FirstOrDefault();
-                    if (newExpense != null)
-                    {
-                        Transactions.Add(new TransactionJoinFM
-                        {
-                            Classification = newExpense.Classification,
-                            Cost = newExpense.Cost,
-                            Date = newExpense.Date,
-                            Description = newExpense.Description,
-                            FamilyRole = DataWorker.FamilyMembers.FirstOrDefault(f => f.Id == newExpense.FamilyMemberId)?.FamilyRole,
-                            TransactionId = newExpense.Id
-                        });
-                    }
+                    var expense = e.NewItems.Cast<Expense>().FirstOrDefault();
+                    AddTransaction(expense);
+                    AverageTransactCostByMonth += expense.Cost / 12;
                     break;
                 case NotifyCollectionChangedAction.Remove:
                     var oldExpense = e.OldItems.Cast<Expense>().FirstOrDefault();
-                    if (oldExpense != null)
-                        Transactions.Remove(Transactions.FirstOrDefault(t => t.TransactionId == oldExpense.Id));
+                    RemoveTransaction(oldExpense);
+                    AverageTransactCostByMonth -= oldExpense.Cost / 12;
                     break;
             }
+            UpdateMonthSeries();
         }
-
         public override ICommand OpenAddingTransactionPresentation =>
             new DelegateCommand(async () =>
             {
                 var rootRegistry = (Application.Current as App).DisplayRootRegistry;
                 await rootRegistry.ShowModalPresentation(new AddingExpensesWndViewModel());
             }, () => mainVM.User?.Role == "admin");
-
         public override ICommand DeleteTransaction =>
             new DelegateCommand(() =>
             {
@@ -93,7 +79,6 @@ namespace family_budget.ViewModels
                 var toRemove = DataWorker.Expenses.FirstOrDefault(e => e.Id == selected.TransactionId);
                 DataWorker.RemoveExpense(toRemove);
             }, () => mainVM.User?.Role == "admin" && SelectedTransactionJoinFM != null);
-
         public override ICommand ChangeTransaction =>
             new DelegateCommand(async () =>
             {

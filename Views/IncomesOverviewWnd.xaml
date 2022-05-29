@@ -5,13 +5,16 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:family_budget.Views"
         mc:Ignorable="d"
+        xmlns:m="clr-namespace:family_budget.Models"
         WindowStartupLocation="CenterScreen"
         xmlns:vm="clr-namespace:family_budget.ViewModels"
         xmlns:sc="clr-namespace:family_budget.Services"
-        xmlns:lvc="clr-namespace:LiveCharts.Wpf;assembly=LiveCharts.Wpf"
+        xmlns:lvc="clr-namespace:LiveCharts.Wpf;assembly=LiveCharts.Wpf" 
+        xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
         Title="IncomeOverviewWnd" Height="450" Width="800">
     <Window.Resources>
         <sc:DateTimeToDateConverter x:Key="dateConverter"/>
+        <sc:EnumConverter x:Key="EnumConverter"/>
     </Window.Resources>
     <Window.DataContext>
         <vm:IncomesOverviewWndViewModel/>
@@ -22,9 +25,50 @@
             <ColumnDefinition/>
         </Grid.ColumnDefinitions>
 
-        <lvc:CartesianChart>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="0.06*"/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
 
-        </lvc:CartesianChart>
+            <StackPanel Orientation="Horizontal">
+
+                <Label Style="{StaticResource DefaultLabel}"
+                       FontSize="12"
+                       Content="Месяц:"/>
+                <ComboBox ItemsSource="{Binding Source={sc:EnumToItemsSource {x:Type m:Month}}}"
+                          SelectedItem="{Binding FirstSelectedMonth,
+                                         Converter={StaticResource EnumConverter}, ConverterParameter={x:Type m:Month}}">
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="SelectionChanged">
+                            <i:InvokeCommandAction Command="{Binding FirstMonthSelectionChanged}"/>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
+                </ComboBox>
+
+                <Label Style="{StaticResource DefaultLabel}"
+                       FontSize="12"
+                       Content="Месяц:"/>
+                <ComboBox ItemsSource="{Binding Source={sc:EnumToItemsSource {x:Type m:Month}}}"
+                          SelectedItem="{Binding SecondSelectedMonth,
+                                         Converter={StaticResource EnumConverter}, ConverterParameter={x:Type m:Month}}">
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="SelectionChanged">
+                            <i:InvokeCommandAction Command="{Binding SecondMonthSelectionChanged}"/>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
+                </ComboBox>
+            </StackPanel>
+
+            <lvc:CartesianChart Grid.Row="1" Series="{Binding MonthsSeries}">
+                <lvc:CartesianChart.AxisX>
+                    <lvc:Axis Labels="{Binding Labels}" FontSize="10">
+
+                    </lvc:Axis>
+                </lvc:CartesianChart.AxisX>
+            </lvc:CartesianChart>
+
+        </Grid>
 
         <Grid Grid.Column="1">
             <Grid.RowDefinitions>
