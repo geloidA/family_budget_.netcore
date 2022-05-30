@@ -5,9 +5,12 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:family_budget.Views"
         mc:Ignorable="d"
+        xmlns:sc="clr-namespace:family_budget.Services"
         WindowStartupLocation="CenterScreen"
         xmlns:vm="clr-namespace:family_budget.ViewModels"
-        Title="Изменение расхода" Height="450" Width="300">
+        MinHeight="450" MinWidth="300"
+        MaxHeight="450" MaxWidth="300"
+        Title="Изменение расхода">
     <Window.DataContext>
         <vm:ChangingExpenseWndViewModel/>
     </Window.DataContext>
@@ -46,6 +49,7 @@
         <Button Content="Изменить" 
                 FontFamily="Inter"
                 Grid.Row="1"
+                sc:ButtonHelper.DialogResult="True"
                 VerticalAlignment="Top"
                 Margin="15 0 15 0"
                 IsDefault="True"

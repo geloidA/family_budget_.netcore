@@ -15,6 +15,7 @@ namespace family_budget.ViewModels
 
                 var updated = new Expense
                 {
+                    Id = expense.Id,
                     Classification = this.Classification,
                     Date = this.Date,
                     Description = this.Description,

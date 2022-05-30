@@ -95,20 +95,30 @@ namespace family_budget.Models.DataBase
             context.FamilyMembers.Remove(familyMember);
             context.SaveChanges();
         }
-        public static void UpdateUser(User toUpdate, User from)
+        public static void UpdateUser(int toUpdateId, User from)
         {
             using var context = new DataContext();
+            var toUpdate = context.Users.Single(u => u.Id == toUpdateId);
+            UpdateUserData(toUpdate, from);
+            var progUser = Users.Single(u => u.Id == toUpdateId);
+            UpdateUserData(progUser, from);
+            context.SaveChanges();
+        }
+        private static void UpdateUserData(User toUpdate, User from)
+        {
             toUpdate.FullName = from.FullName;
             toUpdate.Password = from.Password;
             toUpdate.Login = from.Login;
-            context.SaveChanges();
         }
         public static void UpdateIncome(int toUpdateId, Income from)
         {
             using var context = new DataContext();
-            var toUpdate = context.Incomes.SingleOrDefault(e => e.Id == toUpdateId);
+            var toUpdate = context.Incomes.Single(i => i.Id == toUpdateId);
 
             IncomeUpdated?.Invoke(toUpdate, from);
+
+            var income = Incomes.Single(i => i.Id == toUpdateId);
+            UpdateTransaction(income, from);
 
             UpdateTransaction(toUpdate, from);
             context.SaveChanges();
@@ -116,9 +126,12 @@ namespace family_budget.Models.DataBase
         public static void UpdateExpense(int toUpdateId, Expense from)
         {
             using var context = new DataContext();
-            var toUpdate = context.Expenses.SingleOrDefault(e => e.Id == toUpdateId);
+            var toUpdate = context.Expenses.Single(e => e.Id == toUpdateId);
 
             ExpenseUpdated?.Invoke(toUpdate, from);
+
+            var expense = Expenses.Single(e => e.Id == toUpdateId);
+            UpdateTransaction(expense, from);
 
             UpdateTransaction(toUpdate, from);
             context.SaveChanges();
@@ -131,11 +144,16 @@ namespace family_budget.Models.DataBase
             toUpdate.Description = from.Description;
             toUpdate.Cost = from.Cost;
         }
-        public static void UpdateFamilyMember(FamilyMember toUpdate, FamilyMember from)
+        public static void UpdateFamilyMember(int toUpdateId, FamilyMember from)
         {
+            var programMember = FamilyMembers.Single(x => x.Id == toUpdateId);
+            programMember.FullName = from.FullName;
+            programMember.FamilyRole = from.FamilyRole;
+
             using var contxt = new DataContext();
-            toUpdate.FullName = from.FullName;
-            toUpdate.FamilyRole = from.FamilyRole;
+            var dbMember = contxt.FamilyMembers.Single(x => x.Id == toUpdateId);
+            dbMember.FullName = from.FullName;
+            dbMember.FamilyRole = from.FamilyRole;
             contxt.SaveChanges();
         }
     }

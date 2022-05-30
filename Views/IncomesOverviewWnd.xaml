@@ -11,7 +11,8 @@
         xmlns:sc="clr-namespace:family_budget.Services"
         xmlns:lvc="clr-namespace:LiveCharts.Wpf;assembly=LiveCharts.Wpf" 
         xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
-        Title="IncomeOverviewWnd" Height="450" Width="800">
+        MinHeight="450" MinWidth="800"
+        Title="Доходы" Height="450" Width="800">
     <Window.Resources>
         <sc:DateTimeToDateConverter x:Key="dateConverter"/>
         <sc:EnumConverter x:Key="EnumConverter"/>
@@ -76,31 +77,25 @@
                 <RowDefinition/>
             </Grid.RowDefinitions>
 
-            <UniformGrid Columns="3">
-                <Button Command="{Binding OpenAddingTransactionPresentation}">
-                    <StackPanel Orientation="Horizontal">
-                        <TextBlock Style="{StaticResource DefaultTextBlock}"
+            <Button Command="{Binding OpenAddingTransactionPresentation}">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Style="{StaticResource DefaultTextBlock}"
                                Text="Добавить"
                                FontSize="12"/>
-                        <ContentControl Content="{StaticResource PlusIcon}"/>
-                    </StackPanel>
-                </Button>
-                <Button Command="{Binding DeleteTransaction}">
-                    <TextBlock Style="{StaticResource DefaultTextBlock}"
-                               Text="Удалить"
-                               FontSize="12"/>
-                </Button>
-                <Button Command="{Binding ChangeTransaction}">
-                    <TextBlock Style="{StaticResource DefaultTextBlock}"
-                               Text="Изменить"
-                               FontSize="12"/>
-                </Button>
-            </UniformGrid>
+                    <ContentControl Content="{StaticResource PlusIcon}"/>
+                </StackPanel>
+            </Button>
 
             <DataGrid Grid.Row="1" ItemsSource="{Binding Transactions}" 
                       AutoGenerateColumns="False" FontFamily="Inter"
                       IsReadOnly="True"
                       SelectedItem="{Binding SelectedTransactionJoinFM}">
+                <DataGrid.ContextMenu>
+                    <ContextMenu>
+                        <MenuItem Header="Удалить" Command="{Binding DeleteTransaction}"/>
+                        <MenuItem Header="Изменить" Command="{Binding ChangeTransaction}"/>
+                    </ContextMenu>
+                </DataGrid.ContextMenu>
                 <DataGrid.Columns>
                     <DataGridTextColumn Header="Владелец" Binding="{Binding FamilyRole}"/>
                     <DataGridTextColumn Header="Классификация" Binding="{Binding Classification}"/>

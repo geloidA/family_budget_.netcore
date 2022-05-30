@@ -1,28 +1,29 @@
-﻿<Window x:Class="family_budget.Views.AddingFamilyMemberWnd"
+﻿<Window x:Class="family_budget.Views.ChangeFamilyMemberWnd"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:family_budget.Views"
-        xmlns:sc="clr-namespace:family_budget.Services"
+        xmlns:local="clr-namespace:family_budget.Views" 
         xmlns:m="clr-namespace:family_budget.Models"
+        xmlns:sc="clr-namespace:family_budget.Services" 
         xmlns:vc="clr-namespace:family_budget.ViewModels"
         mc:Ignorable="d"
         WindowStartupLocation="CenterScreen"
         MinHeight="210" MinWidth="300"
-        Title="Добавление члена семьи" MaxHeight="210" MaxWidth="300">
+        MaxHeight="210" MaxWidth="300"
+        Title="Изменение члена семьи">
     <Window.Resources>
         <sc:EnumConverter x:Key="EnumConverter"/>
     </Window.Resources>
     <Window.DataContext>
-        <vc:AddingFamilyMemberViewModel/>
+        <vc:ChangeFamilyMemberViewModel/>
     </Window.DataContext>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="0.9*"/>
             <RowDefinition Height="0.2*"/>
         </Grid.RowDefinitions>
-        
+
         <StackPanel Margin="15">
             <Label Style="{StaticResource DefaultLabel}" 
                    Content="ФИО" FontSize="12"/>
@@ -32,16 +33,16 @@
                    Content="Роль в семье" FontSize="12"/>
             <ComboBox ItemsSource="{Binding Source={sc:EnumToItemsSource {x:Type m:FamilyRole}}}"
                       SelectedItem="{Binding Role,
-                                     Converter={StaticResource EnumConverter}, ConverterParameter={x:Type m:FamilyRole}}"/>            
+                                     Converter={StaticResource EnumConverter}, ConverterParameter={x:Type m:FamilyRole}}"/>
         </StackPanel>
-        
-        <Button Content="Добавить"
+
+        <Button Content="Изменить"
                 sc:ButtonHelper.DialogResult="True"
                 FontFamily="Inter"
                 Grid.Row="1"
                 VerticalAlignment="Top"
                 Margin="15 0 15 0"
                 IsDefault="True"
-                Command="{Binding AddFamilyMember}"/>
+                Command="{Binding Change}"/>
     </Grid>
 </Window>

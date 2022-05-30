@@ -6,9 +6,12 @@
         xmlns:local="clr-namespace:family_budget.Views"
         xmlns:vm="clr-namespace:family_budget.ViewModels"
         mc:Ignorable="d"
+        xmlns:sc="clr-namespace:family_budget.Services"
         WindowStartupLocation="CenterScreen"
         ResizeMode="NoResize"
-        Title="Добавление дохода" Height="450" Width="300">
+        MinHeight="450" MinWidth="300"
+        MaxHeight="450" MaxWidth="300"
+        Title="Добавление дохода">
     <Window.DataContext>
         <vm:AddingIncomesWndViewModel/>
     </Window.DataContext>
@@ -47,6 +50,7 @@
         <Button Content="Добавить" 
                 FontFamily="Inter"
                 Grid.Row="1"
+                sc:ButtonHelper.DialogResult="True"
                 VerticalAlignment="Top"
                 Margin="15 0 15 0"
                 IsDefault="True"

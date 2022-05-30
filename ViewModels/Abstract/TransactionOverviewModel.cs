@@ -5,9 +5,9 @@ using LiveCharts;
 using LiveCharts.Defaults;
 using LiveCharts.Wpf;
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 
@@ -22,7 +22,7 @@ namespace family_budget.ViewModels.Abstract
         public Month FirstSelectedMonth { get; set; } = Month.Average;
         public Month SecondSelectedMonth { get; set; } = (Month)DateTime.Now.Month;
         public ObservableCollection<TransactionJoinFM> Transactions { get; set; }
-        public TransactionJoinFM SelectedTransactionJoinFM { get; set; }       
+        public TransactionJoinFM SelectedTransactionJoinFM { get; set; }
         public ObservableValue FirstTransactCostByMonth;
         public ObservableValue SecondTransactCostByMonth;
         private protected double AverageTransactCostByMonth { get; set; }
@@ -58,7 +58,7 @@ namespace family_budget.ViewModels.Abstract
         {
             MonthsSeries.Clear();
 
-            FirstTransactCostByMonth.Value = FirstSelectedMonth == Month.Average ? AverageTransactCostByMonth 
+            FirstTransactCostByMonth.Value = FirstSelectedMonth == Month.Average ? AverageTransactCostByMonth
                 : SumOfTransactionsPerMonth(FirstSelectedMonth);
             SecondTransactCostByMonth.Value = SecondSelectedMonth == Month.Average ? AverageTransactCostByMonth
                 : SumOfTransactionsPerMonth(SecondSelectedMonth);
@@ -96,7 +96,7 @@ namespace family_budget.ViewModels.Abstract
         {
             if (transaction != null)
                 Transactions.Remove(Transactions.FirstOrDefault(t => t.TransactionId == transaction.Id));
-        }        
+        }
 
         public virtual ICommand OpenAddingTransactionPresentation { get; }
         public virtual ICommand DeleteTransaction { get; }
@@ -111,6 +111,11 @@ namespace family_budget.ViewModels.Abstract
             {
                 MonthSelectionChanged(SecondSelectedMonth, SecondTransactCostByMonth, 1);
             });
+        private protected async Task OpenModalPresentation(object vm)
+        {
+            var rootRegistry = (Application.Current as App).DisplayRootRegistry;
+            await rootRegistry.ShowModalPresentation(vm);
+        }
         private void MonthSelectionChanged(Month month, ObservableValue value, int labelIndex)
         {
             Labels[labelIndex] = Enum.GetName(month);

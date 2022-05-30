@@ -7,7 +7,9 @@
         xmlns:vm="clr-namespace:family_budget.ViewModels"
         mc:Ignorable="d"
         WindowStartupLocation="CenterScreen"
-        Title="AuthorizationWnd" Height="450" Width="400">
+        MinHeight="450" MinWidth="400"
+        MaxHeight="450" MaxWidth="400"
+        Title="Авторизация">
     <Window.DataContext>
         <vm:AuthorizetionViewModel/>
     </Window.DataContext>
