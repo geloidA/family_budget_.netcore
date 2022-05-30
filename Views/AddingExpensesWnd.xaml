@@ -4,10 +4,12 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:family_budget.Views"
+        xmlns:sc="clr-namespace:family_budget.Services"
         mc:Ignorable="d"
         ResizeMode="NoResize"
         xmlns:vm="clr-namespace:family_budget.ViewModels"
-        Title="AddingExpensesWnd" Height="450" Width="300" WindowStartupLocation="CenterScreen">
+        MinHeight="450" MinWidth="300"
+        Title="Добавление расхода" MaxHeight="450" MaxWidth="300" WindowStartupLocation="CenterScreen">
     <Window.DataContext>
         <vm:AddingExpensesWndViewModel/>
     </Window.DataContext>
@@ -45,6 +47,7 @@
 
         <Button Content="Добавить" 
                 FontFamily="Inter"
+                sc:ButtonHelper.DialogResult="True"
                 Grid.Row="1"
                 VerticalAlignment="Top"
                 Margin="15 0 15 0"

@@ -1,15 +1,19 @@
 ﻿using DevExpress.Mvvm;
 using family_budget.Models;
 using family_budget.Models.DataBase;
-using family_budget.ViewModels.Abstract;
+using family_budget.Services;
 using LiveCharts;
 using LiveCharts.Defaults;
 using LiveCharts.Wpf;
+using Microsoft.Win32;
+using Syncfusion.XlsIO;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 
@@ -22,7 +26,7 @@ namespace family_budget.ViewModels
         public SeriesCollection Expenses { get; set; }
         public SeriesCollection Incomes { get; set; }
 
-        public ObservableCollection<MemberCosts> FamilyMembers { get; set; }            
+        public ObservableCollection<MemberCosts> FamilyMembers { get; set; }
         public MemberCosts SelectedFamilyMember { get; set; }
         public ObservableCollection<Expense> MonthExpenses { get; set; }
         public double MonthExpensesSum { get; set; }
@@ -178,13 +182,8 @@ namespace family_budget.ViewModels
         private void DataWorker_ExpenseUpdated(Expense toUpdate, Expense from)
         {
             UpdateTransaction(toUpdate, from, AmountsGroupedExpenses, Expenses);
-            var first = MonthExpenses.FirstOrDefault();
-            if (first != null)
-            {
-                if (toUpdate.Date.Month == first.Date.Month && toUpdate.Date.Year == first.Date.Year)
-                    UpdateMonthExpenses(toUpdate, from);
-            }
-            UpdateFamilyMember(toUpdate, from, "Expenses");
+            UpdateMonthExpenses(toUpdate, from);
+            UpdateFamilyMember(toUpdate, from, nameof(MemberCosts.Expenses));
         }
 
         private void UpdateTransaction(Transaction toUpdate, Transaction from,
@@ -234,22 +233,33 @@ namespace family_budget.ViewModels
         }
         private void UpdateMonthExpenses(Expense toUpdate, Expense from)
         {
-            if (from.Date.Month != toUpdate.Date.Month)
-                MonthExpenses.Remove(toUpdate);
-            else
+            switch (IsCurrentMonth(toUpdate), IsCurrentMonth(from))
             {
-                var toChange = MonthExpenses.SingleOrDefault(e => e.Id == toUpdate.Id);
-                MonthExpensesSum += from.Cost - toUpdate.Cost;
-                if(toChange != null)
-                {
+                case (true, true):
+                    var toChange = MonthExpenses.SingleOrDefault(e => e.Id == toUpdate.Id);
+                    MonthExpensesSum += from.Cost - toUpdate.Cost;
+
                     toChange.Date = from.Date;
                     toChange.Classification = from.Classification;
                     toChange.Cost = from.Cost;
                     toChange.Description = from.Description;
                     toChange.FamilyMemberId = from.FamilyMemberId;
-                }                
+                    break;
+
+                case (true, false):
+                    var toRemove = MonthExpenses.SingleOrDefault(e => e.Id == toUpdate.Id);
+                    MonthExpensesSum -= toRemove.Cost;
+                    MonthExpenses.Remove(toRemove);
+                    break;
+
+                case (false, true):
+                    MonthExpensesSum += from.Cost;
+                    MonthExpenses.Add(from);
+                    break;
             }
         }
+        private bool IsCurrentMonth(Expense expense)
+            => expense.Date.Month == DateTime.Now.Month && expense.Date.Year == DateTime.Now.Year;
         private void UpdateFamilyMember(Transaction toUpdate, Transaction from, string propertyName)
         {
             if (toUpdate.FamilyMemberId == from.FamilyMemberId)
@@ -274,7 +284,7 @@ namespace family_budget.ViewModels
         }
         private void AddToMonthExpenses(Expense newExpense)
         {
-            if (newExpense.Date.Month == DateTime.Now.Month)
+            if (newExpense.Date.Year == DateTime.Now.Year && newExpense.Date.Month == DateTime.Now.Month)
             {
                 MonthExpenses.Add(newExpense);
                 MonthExpensesSum += newExpense.Cost;
@@ -282,18 +292,19 @@ namespace family_budget.ViewModels
         }
         private void RemoveFromMonthExpenses(Expense oldExpense)
         {
-            if (oldExpense.Date.Month == DateTime.Now.Month)
+            var expense = MonthExpenses.FirstOrDefault(e => e.Date == oldExpense.Date);
+            if (IsCurrentMonth(expense))
             {
-                MonthExpenses.Remove(oldExpense);
-                MonthExpensesSum -= oldExpense.Cost;
+                MonthExpenses.Remove(expense);
+                MonthExpensesSum -= expense.Cost;
             }
         }
         private void DataWorker_IncomeUpdated(Income toUpdate, Income from)
         {
             UpdateTransaction(toUpdate, from, AmountsGroupedIncomes, Incomes);
-            UpdateFamilyMember(toUpdate, from, "Incomes");
+            UpdateFamilyMember(toUpdate, from, nameof(MemberCosts.Incomes));
         }
-        
+
 
         public ICommand OpenAuthorizationPresentation
         {
@@ -306,10 +317,23 @@ namespace family_budget.ViewModels
             }
         }
         public ICommand OpenAddFamilyMemberPresentation
-            => new DelegateCommand(() =>
+            => new DelegateCommand(async () =>
             {
-                OpenPresentaion(new AddingFamilyMemberViewModel());
+                await OpenModalPresentation(new AddingFamilyMemberViewModel());
             }, () => User != null);
+        public ICommand OpenChangeFamilyMemberPresentation
+            => new DelegateCommand(async () =>
+            {
+                var converter = new EnumConverter();
+                var selectedMember = SelectedFamilyMember.Member;
+                await OpenModalPresentation(new ChangeFamilyMemberViewModel
+                {
+                    ToChange = selectedMember,
+                    FullName = selectedMember.FullName,
+                    Role = (FamilyRole)converter.ConvertBack(selectedMember.FamilyRole, null, typeof(FamilyRole), null)
+                });
+            },
+            () => SelectedFamilyMember != null && User != null);
         public ICommand OpenExpensesOverviewPresentation
         {
             get
@@ -340,6 +364,11 @@ namespace family_budget.ViewModels
             }
             else StatusBar = "Окно уже открыто";
         }
+        private async Task OpenModalPresentation(object viewModel)
+        {
+            var rootRegistry = (Application.Current as App).DisplayRootRegistry;
+            await rootRegistry.ShowModalPresentation(viewModel);
+        }
         public ICommand LogOut => new DelegateCommand(() =>
         {
             User = null;
@@ -351,7 +380,58 @@ namespace family_budget.ViewModels
                 var toRemove = SelectedFamilyMember.Member;
                 if (toRemove != null)
                     DataWorker.RemoveFamilyMember(toRemove);
-            }, 
+            },
             () => SelectedFamilyMember != null && User != null);
+        public virtual ICommand CreateExcelReport
+            => new DelegateCommand(() =>
+            {
+                var saveFileDialog = new SaveFileDialog();
+                saveFileDialog.Filter = "Excel files (*.xlsx)|*.xlsx";
+                if (saveFileDialog.ShowDialog() ?? false)
+                {
+                    try
+                    {
+                        using (var excelEngine = new ExcelEngine())
+                        {
+                            var application = excelEngine.Excel;
+                            application.DefaultVersion = ExcelVersion.Excel2016;
+
+                            var workBook = application.Workbooks.Create(1);
+                            var workSheet = workBook.Worksheets[0];
+
+                            workSheet.IsGridLinesVisible = false;
+
+                            FillWorkSheet(workSheet, "Доходы:", AmountsGroupedIncomes);
+                            FillWorkSheet(workSheet, "Расходы:", AmountsGroupedExpenses, AmountsGroupedIncomes.Count + 5);
+
+                            workBook.Close(saveFileDialog.FileName);
+                        }
+                    }
+                    catch (IOException)
+                    {
+                        MessageBox.Show("Закройте файл перед сохранением");
+                    }
+                }
+            },
+            () => User != null);
+
+        private void FillWorkSheet(IWorksheet worksheet, string Title,
+            Dictionary<string, ObservableValue> data, int startRow = 3)
+        {
+            worksheet.Range[startRow, 1].Text = Title;
+            worksheet.Range[startRow, 1].CellStyle.Font.Bold = true;
+            var nextRow = ++startRow;
+            foreach (var group in data)
+            {
+                worksheet.Range[nextRow, 1].Text = group.Key;
+                worksheet.Range[nextRow, 3].Value = group.Value.Value.ToString();
+                worksheet.Range[nextRow, 3].NumberFormat = "₽.00";
+                nextRow++;
+            }
+            worksheet.Range[nextRow, 2].Text = "Итого:";
+            worksheet.Range[nextRow, 2].CellStyle.Font.Italic = true;
+            worksheet.Range[nextRow, 3].Formula = string.Format("=SUM(C{0}:C{1})", startRow, nextRow - 1);
+            worksheet.Range[nextRow, 3].NumberFormat = "₽.00";
+        }
     }
 }

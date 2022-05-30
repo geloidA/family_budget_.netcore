@@ -7,7 +7,8 @@
         xmlns:vm="clr-namespace:family_budget.ViewModels"
         mc:Ignorable="d"
         WindowStartupLocation="CenterScreen"
-        Title="RegistrationWnd" Height="300" Width="400">
+        MinHeight="300" MinWidth="400"
+        Title="Регистрация" MaxHeight="300" MaxWidth="400">
     <Window.DataContext>
         <vm:RegistrationWndViewModel/>
     </Window.DataContext>

@@ -19,6 +19,7 @@ namespace family_budget.ViewModels
                     throw new ArgumentException(nameof(income));
                 var updated = new Income
                 {
+                    Id = income.Id,
                     Classification = this.Classification,
                     Date = this.Date,
                     Description = this.Description,

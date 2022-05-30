@@ -9,7 +9,6 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Linq;
-using System.Windows;
 using System.Windows.Input;
 
 namespace family_budget.ViewModels
@@ -66,13 +65,11 @@ namespace family_budget.ViewModels
             UpdateMonthSeries();
         }
 
-        public override ICommand ChangeTransaction => 
+        public override ICommand ChangeTransaction =>
             new DelegateCommand(async () =>
             {
-                var rootRegistry = (Application.Current as App).DisplayRootRegistry;
                 var selectedIncome = DataWorker.Incomes.FirstOrDefault(i => i.Id == SelectedTransactionJoinFM.TransactionId);
-
-                await rootRegistry.ShowModalPresentation(new ChangingIncomeWndViewModel()
+                await OpenModalPresentation(new ChangingIncomeWndViewModel()
                 {
                     ToChange = selectedIncome,
                     Cost = selectedIncome.Cost,
@@ -94,8 +91,7 @@ namespace family_budget.ViewModels
         public override ICommand OpenAddingTransactionPresentation =>
             new DelegateCommand(async () =>
             {
-                var rootRegistry = (Application.Current as App).DisplayRootRegistry;
-                await rootRegistry.ShowModalPresentation(new AddingIncomesWndViewModel());
-            },() => mainVM.User?.Role == "admin");
+                await OpenModalPresentation(new AddingIncomesWndViewModel());
+            }, () => mainVM.User?.Role == "admin");
     }
 }

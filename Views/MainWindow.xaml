@@ -8,9 +8,11 @@
         xmlns:sc="clr-namespace:family_budget.Services"
         xmlns:lvc="clr-namespace:LiveCharts.Wpf;assembly=LiveCharts.Wpf"
         mc:Ignorable="d"
-        Title="MainWindow" 
+        Title="Главная" 
         Height="450" Width="800"
         WindowStartupLocation="CenterScreen"
+        MinHeight="500"
+        MinWidth="800"
         Background="Cornsilk">
     <Window.Resources>
         <sc:DateTimeToDateConverter x:Key="dateConverter"/>
@@ -81,7 +83,8 @@
                                   LegendLocation="Bottom"/>
                     <Button Grid.Row="1" HorizontalAlignment="Right"
                             Command="{Binding OpenExpensesOverviewPresentation}"
-                            Style="{StaticResource DefaultButton}">
+                            Style="{StaticResource DefaultButton}"
+                            Margin="0">
                         <TextBlock Style="{StaticResource DefaultTextBlock}" Text="Подробнее" FontSize="12"/>
                     </Button>
                 </Grid>
@@ -143,16 +146,16 @@
                                        Style="{StaticResource DefaultTextBlock}"/>
                         </Button>
                     </UniformGrid>
-
-
+                    
                     <ListView ItemsSource="{Binding FamilyMembers}" 
                              HorizontalAlignment="Stretch"
+                             ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                              Height="150"
                              SelectedItem="{Binding SelectedFamilyMember}">
                         <ListView.ContextMenu>
                             <ContextMenu>
                                 <MenuItem Header="Удалить" Command="{Binding RemoveFamilyMember}"/>
-                                <MenuItem Header="Изменить" Command="{Binding OpenChangeFamilyMemberPrasentation}"/>
+                                <MenuItem Header="Изменить" Command="{Binding OpenChangeFamilyMemberPresentation}"/>
                             </ContextMenu>
                         </ListView.ContextMenu>
                         <ListView.View>                            
@@ -192,6 +195,15 @@
                             </GridView>
                         </ListView.View>
                     </ListView>
+
+                    <Button Style="{StaticResource DefaultButton}"
+                            HorizontalAlignment="Center"
+                            Margin="220 2 15 0"
+                            Command="{Binding CreateExcelReport}">
+                        <TextBlock Style="{StaticResource DefaultTextBlock}"
+                                   FontSize="12"
+                                   Text="Отчет"/>
+                    </Button>
                 </StackPanel>
             </Grid>
 

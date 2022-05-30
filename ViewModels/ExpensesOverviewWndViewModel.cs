@@ -68,8 +68,7 @@ namespace family_budget.ViewModels
         public override ICommand OpenAddingTransactionPresentation =>
             new DelegateCommand(async () =>
             {
-                var rootRegistry = (Application.Current as App).DisplayRootRegistry;
-                await rootRegistry.ShowModalPresentation(new AddingExpensesWndViewModel());
+                await OpenModalPresentation(new AddingExpensesWndViewModel());
             }, () => mainVM.User?.Role == "admin");
         public override ICommand DeleteTransaction =>
             new DelegateCommand(() =>
@@ -82,10 +81,8 @@ namespace family_budget.ViewModels
         public override ICommand ChangeTransaction =>
             new DelegateCommand(async () =>
             {
-                var rootRegistry = (Application.Current as App).DisplayRootRegistry;
                 var selectedExpense = DataWorker.Expenses.FirstOrDefault(e => e.Id == SelectedTransactionJoinFM.TransactionId);
-
-                await rootRegistry.ShowModalPresentation(new ChangingExpenseWndViewModel()
+                await OpenModalPresentation(new ChangingExpenseWndViewModel()
                 {
                     ToChange = selectedExpense,
                     Cost = selectedExpense.Cost,
