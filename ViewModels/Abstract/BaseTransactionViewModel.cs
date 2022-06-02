@@ -11,7 +11,6 @@ namespace family_budget.ViewModels.Abstract
 {
     internal abstract class BaseTransactionViewModel : ViewModelBase
     {
-        public TextBoxesInput textBoxesInput = new();
         public ObservableCollection<FamilyMember> FamilyMembers { get; set; }
         public FamilyMember SelectedFamilyMember { get; set; }
         public string Classification { get; set; }

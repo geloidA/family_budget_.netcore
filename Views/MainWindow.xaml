@@ -154,8 +154,8 @@
                              SelectedItem="{Binding SelectedFamilyMember}">
                         <ListView.ContextMenu>
                             <ContextMenu>
-                                <MenuItem Header="Удалить" Command="{Binding RemoveFamilyMember}"/>
                                 <MenuItem Header="Изменить" Command="{Binding OpenChangeFamilyMemberPresentation}"/>
+                                <MenuItem Header="Удалить" Command="{Binding RemoveFamilyMember}"/>
                             </ContextMenu>
                         </ListView.ContextMenu>
                         <ListView.View>                            

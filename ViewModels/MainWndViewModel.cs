@@ -320,7 +320,7 @@ namespace family_budget.ViewModels
             => new DelegateCommand(async () =>
             {
                 await OpenModalPresentation(new AddingFamilyMemberViewModel());
-            }, () => User != null);
+            }, () => User != null && User?.Role == "admin");
         public ICommand OpenChangeFamilyMemberPresentation
             => new DelegateCommand(async () =>
             {
@@ -333,7 +333,7 @@ namespace family_budget.ViewModels
                     Role = (FamilyRole)converter.ConvertBack(selectedMember.FamilyRole, null, typeof(FamilyRole), null)
                 });
             },
-            () => SelectedFamilyMember != null && User != null);
+            () => SelectedFamilyMember != null && User?.Role == "admin");
         public ICommand OpenExpensesOverviewPresentation
         {
             get
@@ -381,7 +381,7 @@ namespace family_budget.ViewModels
                 if (toRemove != null)
                     DataWorker.RemoveFamilyMember(toRemove);
             },
-            () => SelectedFamilyMember != null && User != null);
+            () => SelectedFamilyMember != null && User?.Role == "admin");
         public virtual ICommand CreateExcelReport
             => new DelegateCommand(() =>
             {
