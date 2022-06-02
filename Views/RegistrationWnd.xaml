@@ -51,11 +51,13 @@
                 </Grid.ColumnDefinitions>
                 <Button Command="{Binding Registrate}"
                         HorizontalAlignment="Left"
+                        Style="{StaticResource DefaultButton}"
                         Width="100"
                         Content="OK"/>
 
                 <Button Command="{Binding Cancel}"
                         HorizontalAlignment="Right"
+                        Style="{StaticResource DefaultButton}"
                         Width="100"
                         Content="Отмена" 
                         Grid.Column="1"/>

@@ -15,10 +15,15 @@
     </Window.DataContext>
     <Grid>
         <StackPanel>
-            <TextBox Text="{Binding Login}"/>
-            <TextBox Text="{Binding Password}"/>
-            <Button Command="{Binding Authorize}" Content="Авторизоваться"/>
-            <Button Foreground="Blue" 
+            <Label Content="Логин"/>
+            <TextBox Text="{Binding Login}" Margin="6 0 6 0"/>
+            <Label Content="Пароль"/>
+            <TextBox Text="{Binding Password}" Margin="6 0 6 5"/>
+            <Button Command="{Binding Authorize}" 
+                    Style="{StaticResource DefaultButton}"
+                    Margin="6 0 6 0"
+                    Content="Авторизоваться"/>
+            <Button Foreground="Blue"
                     Command="{Binding OpenRegistrationPresentation}"
                     Background="White"
                     BorderBrush="White">
